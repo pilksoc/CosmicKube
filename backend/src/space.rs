@@ -1,6 +1,6 @@
 
 pub struct Space {
-    coordinates: [u64; 2],
+    coordinate: [u64; 2],
     contains: SpaceKind,
 } 
 
