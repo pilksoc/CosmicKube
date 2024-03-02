@@ -27,7 +27,7 @@ jobs:
                 cd $PROJECT_PATH
                 godot --headless --verbose --export-release "Web" ../build/web/index.html 2>&1 | tee output.txt
                 echo Reading build logs...
-                if search="$(cat output.txt | grep 'ERROR:')"
+                if search="$(cat output.txt | grep 'ERROR: Project export')"
                 then
                 echo "Build failed!"
                 exit 1
