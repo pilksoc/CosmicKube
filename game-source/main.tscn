@@ -13,7 +13,7 @@ move_speed = 1000.0
 position = Vector2(986, 524)
 
 [node name="box2" parent="." instance=ExtResource("2_n627q")]
-position = Vector2(34, -25)
+position = Vector2(140, -16)
 
 [node name="box3" parent="." instance=ExtResource("2_n627q")]
 position = Vector2(189, 538)
