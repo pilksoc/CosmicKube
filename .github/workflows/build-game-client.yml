@@ -35,9 +35,24 @@ jobs:
                 echo "Build succeeded!"
                 exit 0
                 fi ;
+            - name: Create staticwebapp.config.json
+              run: |
+                cd build/
+                echo ${{ vars.STATIC_WEB_APP_CONFIG }} > staticwebapp.config.json
             - name: Upload Artifact
               uses: actions/upload-artifact@v1
               with:
                 name: web
                 path: build/web
-          
+            
+            - name: Publish to Azure Static Web Apps
+              id: publishto
+              uses: Azure/static-web-apps-deploy@v1
+              with:
+                    azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+                    repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for GitHub integrations (i.e. PR comments)
+                    action: "upload"
+                    ###### Repository/Build Configurations ######
+                    app_location: "build/web"
+                    skip_app_build: true
+                    ###### End of Repository/Build Configurations ######
