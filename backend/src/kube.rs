@@ -17,6 +17,10 @@ impl KubeId {
     pub fn as_u128(&self) -> u128 {
         self.uuid.as_u128()
     }
+
+    pub fn uuid(&self) -> Uuid {
+        self.uuid
+    }
 }
 
 #[derive(PartialEq, Debug)]
