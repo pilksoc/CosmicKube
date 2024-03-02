@@ -1,12 +1,26 @@
+use crate::kube;
+use crate::player;
+use crate::Coordinate;
 
+#[derive(Debug, PartialEq)]
 pub struct Space {
-    coordinate: [u64; 2],
-    contains: SpaceKind,
-} 
+    pub coordinate: Coordinate,
+    pub contains: SpaceKind,
+}
+impl Space {
+    pub fn new(coordinate: Coordinate, contains: SpaceKind) -> Space {
+        Space {
+            coordinate,
+            contains,
+        }
+    }
+}
 
+#[derive(Debug, PartialEq)]
+#[allow(clippy::module_name_repetitions)]
 pub enum SpaceKind {
-    Kube(Kube),
-    Player(Player),
+    Kube(kube::Kube),
+    Player(player::Player),
     EmptySpace,
 }
 
