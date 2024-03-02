@@ -1,24 +1,38 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'barichello/godot-ci:4.2.1'
+
+    }        }
+    environment {
+        GODOT_VERSION = '4.2.1'
+        EXPORT_NAME = 'CosmicKube'
+        PROJECT_PATH = 'game-source'
+    }
 
     stages {
-        stage('Hello world') {
+        stage('Setup') {
             steps {
-              sh 'echo pee pee'
+                sh '''mkdir -v -p ~/.local/share/godot/export_templates/
+                mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+                '''
             }
         }
-
-        // stage('Push image') {
-        //   steps {
-        //     sh 'docker push localhost:5000/ttt'
-        //   }
-        // }
-        //
-        // stage('Package') {
-        //   steps {
-        //     sh 'helm install ttt ttt | true'
-        //     sh 'helm upgrade ttt ttt'
-        //   }
-        // }
+        stage('Web Build') {
+            steps {
+                sh '''mkdir -v -p build/web
+                cd $PROJECT_PATH
+                godot --headless --verbose --export-release "Web" ../build/web/index.html 2>&1 | tee output.txt
+                echo Reading build logs...
+                if search="$(cat output.txt | grep 'ERROR: Project export')"
+                then
+                echo "Build failed!"
+                exit 1
+                else
+                echo "Build succeeded!"
+                exit 0
+                fi ;'''
+            }
+        }
     }
 }

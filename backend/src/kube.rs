@@ -32,3 +32,5 @@ impl Kube {
         }
     }
 }
+
+// we should have a placeholder ''loading'' cube we can send over if api is slow
