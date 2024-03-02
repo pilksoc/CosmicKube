@@ -9,6 +9,6 @@ edition = "2021"
 openai_api_rust = "0.1.8"
 diesel = { version = "2.1.0", features = ["postgres"] }
 dotenvy = "0.15"
-uuid = { version = "1.7.0", features = ["v4"] }
+uuid = { version = "1.7.0", features = ["v5"] }
 tokio = { version = "1", features = ["full"] }
 async-trait = "0.1.77"
