@@ -1,6 +1,6 @@
 use uuid::Uuid;
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
 pub struct KubeId {
     uuid: Uuid,
 }
@@ -19,7 +19,7 @@ impl KubeId {
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct Kube {
     pub id: KubeId,
     pub name: String,
