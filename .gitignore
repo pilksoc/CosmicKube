@@ -50,3 +50,5 @@ Cargo.lock
 .history
 .ionide
 
+### === Rust ===
+backend/target/
