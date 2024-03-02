@@ -37,7 +37,7 @@ jobs:
                 fi ;
             - name: Create staticwebapp.config.json
               run: |
-                cd build/
+                cd build/web
                 echo "${{ vars.STATIC_WEB_APP_CONFIG }}" > staticwebapp.config.json
                 ls
             - name: Upload Artifact
