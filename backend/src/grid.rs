@@ -48,7 +48,7 @@ impl Grid {
 
     }
 
-    /// Adds a new space to the grid. In the future, this may return an [`std::result::Result::Err`] if the space is of type [`space::SpaceKind::EmptySpace`].
+    /// Adds a new space to the grid. In the future, this may return an [`std::result::Result::Err`] if the space is of type [`crate::space::SpaceKind::EmptySpace`].
     pub fn insert(&mut self, space: Space) {
         self.spaces.insert(space.coordinate, space);
     }
@@ -99,7 +99,7 @@ impl Grid {
             .collect::<Vec<_>>()
     }
 
-    /// Returns neighbours which are in the grid *and* which aren't [`SpaceKind::EmptySpace`]s.
+    /// Returns neighbours which are in the grid *and* which aren't [`crate::space::SpaceKind::EmptySpace`]s.
     pub fn get_nonempty_neighbours(&self, coordinate: Coordinate) -> Vec<&Space> {
         self.neighbour_coords_in_bounds(coordinate).iter()
             .map(|coord| self.get_space(*coord))
@@ -182,7 +182,7 @@ impl Grid {
         self.change_grid_by_rings(rings_to_add, GrowDirection::Expand)
     }
 
-    /// Like [`grid::expand_grid`], but instead of expanding, this shrinks.
+    /// Like [`crate::grid::Grid::expand_grid`], but instead of expanding, this shrinks.
     pub fn shrink_grid(&mut self, rings_to_shrink_by: u64) -> Result<(), ResizeError> {
         self.change_grid_by_rings(rings_to_shrink_by, GrowDirection::Shrink)
     }
