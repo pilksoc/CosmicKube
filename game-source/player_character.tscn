@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://xqoiyxrn10js"]
+
+[ext_resource type="Texture2D" uid="uid://cf7mjmudnjchn" path="res://assets/lil_guy.png" id="1_rfqfo"]
+[ext_resource type="Script" path="res://player_character.gd" id="1_rmbqt"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_x11ul"]
+size = Vector2(159, 317)
+
+[node name="PlayerCharacter" type="CharacterBody2D"]
+script = ExtResource("1_rmbqt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, -7.5)
+shape = SubResource("RectangleShape2D_x11ul")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-0.5, 3)
+scale = Vector2(1.002, 1.008)
+texture = ExtResource("1_rfqfo")
+
+[node name="Camera2D" type="Camera2D" parent="."]
