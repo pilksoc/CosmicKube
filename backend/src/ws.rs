@@ -56,7 +56,7 @@ pub async fn client_connection(ws: WebSocket, clients: Clients) {
     println!("{} disconnected", uuid); //debug
 }
 
-// example function to respond to a clients message, this just responds to 'ping!' with 'pong!', but later we will replace this with;
+
 // ->recieve client game info <- send back client game state
 // wwwwwwwwwwwwwwwwwwwww i am so tired 
 async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
