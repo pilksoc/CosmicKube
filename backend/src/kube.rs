@@ -1,5 +1,5 @@
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Ord)]
 pub struct Kube {
+    uuid: uuid::Uuid,
     name: String,
-    uuid: String, //uuid type?
 }
