@@ -1,4 +1,5 @@
-use crate::kube::Kube;use async_trait::async_trait;
+use crate::kube::Kube;
+use async_trait::async_trait;
 
 /// Trait for interacting with an LLM.
 #[async_trait]
@@ -28,8 +29,7 @@ impl LLM for FakeLLM {
         for kube in kubes {
             new_string.push_str(kube.name.as_str());
         }
-        let uuid = uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_DNS, b"poo");
-        Kube { name: new_string, uuid }		
+        Kube::new(new_string)
     }
 }
 
@@ -39,8 +39,8 @@ mod tests {
     #[tokio::test]
     async fn fake_combine_test() {
         let kubes = vec![
-            Kube { name: String::from("water"), uuid: uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_DNS, b"poo") },
-            Kube { name: String::from("glass"), uuid: uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_DNS, b"poo") }
+            Kube::new(String::from("water")),
+            Kube::new(String::from("glass")),
         ];
         let fake_llm = FakeLLM::new();
         let response_kube = fake_llm.combine(&kubes).await;
