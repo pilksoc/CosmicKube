@@ -47,6 +47,8 @@ impl Grid {
         }
 
     }
+
+    /// Adds a new space to the grid. In the future, this may return an [`std::result::Result::Err`] if the space is of type [`space::SpaceKind::EmptySpace`].
     pub fn insert(&mut self, space: Space) {
         self.spaces.insert(space.coordinate, space);
     }
@@ -176,11 +178,12 @@ impl Grid {
     /// This will expand the grid size and change the coordinates of the respective kubes.
     /// 
     /// The change in size can be thought of as "rings of squares" to be added around the outside of the grid. So if the grid used to be a 2×2 grid, adding a ring of squares around the outside will give a 4×4 square.
-    fn expand_grid(&mut self, rings_to_add: u64) -> Result<(), ResizeError> {
+    pub fn expand_grid(&mut self, rings_to_add: u64) -> Result<(), ResizeError> {
         self.change_grid_by_rings(rings_to_add, GrowDirection::Expand)
     }
 
-    fn shrink_grid(&mut self, rings_to_shrink_by: u64) -> Result<(), ResizeError> {
+    /// Like [`grid::expand_grid`], but instead of expanding, this shrinks.
+    pub fn shrink_grid(&mut self, rings_to_shrink_by: u64) -> Result<(), ResizeError> {
         self.change_grid_by_rings(rings_to_shrink_by, GrowDirection::Shrink)
     }
 }
