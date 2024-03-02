@@ -47,5 +47,5 @@ jobs:
                 file: server.Dockerfile
                 push: true
                 tags: |
-                    ghcr.io/pilksoc/CosmicKube:dev-latest
-                    ghcr.io/pilksoc/CosmicKube:dev-${{ github.run_number }}
+                    ghcr.io/pilksoc/cosmickube:dev-latest
+                    ghcr.io/pilksoc/cosmickube:dev-${{ github.run_number }}
