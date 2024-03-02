@@ -1,0 +1,34 @@
+simplest building blocks, (you cannot craft these);
+-hydrogen
+-oxygen
+-nitrogen
+-calcium
+-iron
+-aluminium
+-uranium
+-hydrogen
+-sodium
+-chlorine
+-light
+-time
+-silicon
+
+hardcoded recipes:
+- hydrogen + oxygen = water
+- water + chlorine = tap water
+- sodium + chlorine = salt
+- water + salt = sea water
+- nitrogen + oxygen = air
+- iron + water = rust
+- silicon + aluminium = feldspar
+- feldspar + silicon = sand
+- sand + water = dirt
+- sand + sea water = beach
+- dirt + water = earth
+- earth + air = life
+- life + time = age
+- uranium + water = energy
+- sand + time = rock
+- rock + energy = fire
+- fire + sand = glass
+
