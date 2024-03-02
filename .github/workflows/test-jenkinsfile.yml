@@ -1,4 +1,4 @@
-name: "Build CosmicKube game client"
+name: "Test Jenkinsfile"
 on: push
 
 env:
