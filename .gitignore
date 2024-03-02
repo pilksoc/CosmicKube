@@ -50,5 +50,9 @@ Cargo.lock
 .history
 .ionide
 
-### === Rust ===
+# Godot 4+ specific ignores
+.godot/
+.DS_Store
+
 backend/target/
+
