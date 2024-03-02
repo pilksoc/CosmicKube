@@ -39,6 +39,7 @@ jobs:
               run: |
                 cd build/
                 echo "${{ vars.STATIC_WEB_APP_CONFIG }}" > staticwebapp.config.json
+                ls
             - name: Upload Artifact
               uses: actions/upload-artifact@v1
               with:
