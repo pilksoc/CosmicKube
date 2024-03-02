@@ -29,6 +29,7 @@ jobs:
             - name: Check if build succeeded
               run: |
                 echo Reading build logs...
+                cd $PROJECT_PATH
                 cat output.txt
                 if search="$(cat output.txt | grep 'ERROR:')"
                 then
