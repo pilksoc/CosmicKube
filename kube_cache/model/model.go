@@ -16,14 +16,14 @@ type Kube struct {
 
 type KubeRecipe struct {
 	Id          uuid.UUID         `gorm:"primaryKey" json:"id"`
-  Output      uuid.UUID         `json:"outputId" gorm:"index:idx_output_id"`
+	Output      uuid.UUID         `json:"outputId" gorm:"index:idx_output_id"`
 	OutputKube  *Kube             `json:"outputKube" gorm:"foreignKey:Output;references:Id"`
-  Ingredients []KubeRecipeLines `json:"ingredients"`
+	Ingredients []KubeRecipeLines `json:"ingredients"`
 }
 
 type KubeRecipeLines struct {
-  KubeRecipeId uuid.UUID `json:"kube_recipe_id" gorm:"index:idx_kube_recipe_id"`
-  KubeId       string    `json:"kube_id" gorm:"index:idx_kube_id"`
+	KubeRecipeId uuid.UUID `json:"kube_recipe_id" gorm:"index:idx_kube_recipe_id"`
+	KubeId       string    `json:"kube_id" gorm:"index:idx_kube_id"`
 	Kube         *Kube     `json:"kube" gorm:"foreignKey:KubeId;references:Id"`
 }
 

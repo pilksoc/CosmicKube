@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/CosmicKube/kube_cache/aiStuff"
 	"github.com/CosmicKube/kube_cache/model"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -12,28 +13,37 @@ import (
 )
 
 func main() {
-  log.SetFlags(log.Lshortfile | log.Ldate | log.Ltime)
+	log.SetFlags(log.Lshortfile | log.Ldate | log.Ltime)
 
-  log.Println("Reading config...")
-  err := godotenv.Load()
-  if err != nil {
-    log.Fatal(err)
-  }
+	log.Println("Reading config...")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-  log.Println("Using configuration for database...")
-  model.New(os.Getenv("DATABASE_URL"))
+	log.Println("Using configuration for database...")
+	model.New(os.Getenv("DATABASE_URL"))
 
-  log.Println("Starting server...")
-  router := gin.Default()
+	log.Println("Creating AI client...")
+  ai := aiStuff.New(os.Getenv("OPENAI_ENDPOINT"),
+		os.Getenv("OPENAI_API_KEY"),
+		os.Getenv("OPENAI_MODEL_ID"))
+
+    log.Print(ai.GenerateKubeRecipe("water", "laptop"))
+
+	log.Println("Starting server...")
+	router := gin.Default()
 
 	p := ginpromehteus.NewPrometheus("gin")
-
-  router.Use(cors.New(cors.Config{
-    AllowOrigins:     []string{"*"},
-    AllowHeaders:     []string{"*"},
-    AllowOriginFunc: func(_ string) bool {
-      return true
-    },
-  }))
 	p.Use(router)
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"*"},
+		AllowHeaders: []string{"*"},
+		AllowOriginFunc: func(_ string) bool {
+			return true
+		},
+	}))
+
+	log.Fatal(router.Run("0.0.0.0:8080"))
 }
