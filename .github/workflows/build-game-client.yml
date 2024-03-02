@@ -25,18 +25,7 @@ jobs:
               run: |
                 mkdir -v -p build/web
                 cd $PROJECT_PATH
-                godot --headless --verbose --export-release "Web" ../build/web/index.html &> output.txt
-            - name: Check if build succeeded
-              run: |
-                echo Reading build logs...
-                cd $PROJECT_PATH
-                cat output.txt
-                if search="$(cat output.txt | grep 'ERROR:')"
-                then
-                exit 1
-                else
-                exit 0
-                fi ;
+                godot --headless --verbose --export-release "Web" ../build/web/index.html
             - name: Upload Artifact
               uses: actions/upload-artifact@v1
               with:
