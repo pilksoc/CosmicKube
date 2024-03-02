@@ -26,7 +26,8 @@ pub async fn client_connection(ws: WebSocket, clients: Clients) {
     }));
 
     // creating a new uuid to use as the key in the 'clients' hashmap, and a new instance of a 'client'
-    let uuid = Uuid::new_v4().simple().to_string();
+    // this might be clapped
+    let uuid = Uuid::new_v5(&Uuid::NAMESPACE_DNS, "client".as_bytes()).simple().to_string();
 
     let new_client = Client {
         client_id: uuid.clone(),
