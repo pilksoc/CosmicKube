@@ -1,0 +1,34 @@
+name: "Build CosmicKube game client"
+on: push
+
+env:
+    GODOT_VERSION: 4.2.1
+    EXPORT_NAME: CosmicKube
+    PROJECT_PATH: game-source
+
+jobs:
+    export-web:
+        name: "Export for Web"
+        runs-on: ubuntu-20.04
+        container:
+            image: barichello/godot-ci:4.2.1
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+              with:
+                lfs: true
+            - name: Setup
+              run: |
+                mkdir -v -p ~/.local/share/godot/export_templates/
+                mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+            - name: Windows Build
+              run: |
+                mkdir -v -p build/web
+                cd $PROJECT_PATH
+                godot --headless --verbose --export-release "Web" ../build/web/index.html
+            - name: Upload Artifact
+              uses: actions/upload-artifact@v1
+              with:
+                name: web
+                path: build/web
+          
