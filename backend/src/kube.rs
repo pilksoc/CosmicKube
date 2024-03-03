@@ -1,6 +1,7 @@
 use uuid::Uuid;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Serialize, Deserialize)]
 pub struct KubeId {
     uuid: Uuid,
 }
@@ -17,9 +18,13 @@ impl KubeId {
     pub fn as_u128(&self) -> u128 {
         self.uuid.as_u128()
     }
+
+    pub fn uuid(&self) -> Uuid {
+        self.uuid
+    }
 }
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct Kube {
     pub id: KubeId,
     pub name: String,

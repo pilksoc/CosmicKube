@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://cv6rvnsd8jc4u"]
+
+[ext_resource type="Texture2D" uid="uid://c6jm42o02gsfr" path="res://assets/box.png" id="1_q4dmh"]
+
+[node name="CharacterBody2D" type="CharacterBody2D"]
+
+[node name="Box" type="Sprite2D" parent="."]
+position = Vector2(33, 52)
+texture = ExtResource("1_q4dmh")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+visible = false
+position = Vector2(36, 52)
+polygon = PackedVector2Array(16, -124.8, 16, -122.9, 29, -111.9, 29, -109.4, 40.2, -85, 41.1, -85, 51, -69.6, 51, -59, 48.7, -59, 47, -57.9, 47, -57, 49.1, -24, 47.8, -24, 45.8, -8, 45, -8, 45, -4, 43, -4, 36, 5, 33.2, 5, 12, 7.2, 12, 5.89999, -13, 4.10001, -13, 4.89999, -80, 8.10001, -80, 6.10001, -93, -1.89999, -93, -4.60001, -95.4, -11, -98.1, -11, -102.1, -17, -105.2, -17, -115, -19.4, -115, -21.3, -122, -31, -123.6, -31, -149, -46.9, -149, -54, -150, -91, -150, -128, -148.6, -128, -137.6, -135, -127.2, -135, -120, -135.8, -120, -137.2)
