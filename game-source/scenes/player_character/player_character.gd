@@ -8,7 +8,7 @@ extends CharacterBody2D
 @onready var inventoryContainer: VBoxContainer = get_tree().current_scene.find_child('CanvasLayer').find_child('Inventory').find_child('InventoryList')
 
 @onready var OtherObjects: Node2D = get_tree().current_scene.find_child('OtherObjects')
-@onready var BoxObject = preload('res://scenes/box/box.gd')
+@onready var BoxObject = preload('res://scenes/box/box.tscn')
 
 @onready var uuid_util = preload('res://uuid.gd')
 signal player_did_move(new_pos: Vector2)
@@ -53,6 +53,13 @@ const spawnList = {
 }
 
 func _ready():
+	for i in range(250):
+		var obj = BoxObject.instantiate()
+		obj.transform.origin = Vector2(randi() % 300, randi() % 300)
+		var a = spawnList.keys()
+		a = a[randi() % a.size()]
+		obj.fetch_url = "https://hack.djpiper28.co.uk/cache/kubeImageById/" + a
+		OtherObjects.add_child(obj)
 
 	playerInfo = {
 		"username": "Player-" + uuid_util.v4(),
@@ -114,7 +121,6 @@ func _input(event):
 	
 	var vec = Input.get_vector("left", "right", "up", "down")
 
-	print(inventory[selectedItem.id])
 	if event.is_action("Use"):
 		print("gdhlgjhs")
 		if inventory[selectedItem.id].amount > 0 and !selectedItem.has("id"):

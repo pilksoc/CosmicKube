@@ -1,6 +1,5 @@
 extends CharacterBody2D
 
-
 @export var fetch_url: String = "https://via.placeholder.com/100"
 
 func _ready():
