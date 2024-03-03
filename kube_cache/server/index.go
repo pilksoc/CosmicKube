@@ -21,7 +21,7 @@ func (s *Server) Index(c *gin.Context) {
     </div>`, kube.Name, kube.Id)
 	}
 
-	body := fmt.Sprint(`<!DOCTYPE html>
+	body := fmt.Sprintf(`<!DOCTYPE html>
 <head>
   <title>Kube Cache</title>
 </head>
