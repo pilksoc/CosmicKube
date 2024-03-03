@@ -124,16 +124,16 @@ libraries = {
 
 [node name="SpawnListScroll" type="ScrollContainer" parent="CanvasLayer"]
 offset_top = -1.0
-offset_right = 250.0
-offset_bottom = 323.0
+offset_right = 116.0
+offset_bottom = 131.0
 
 [node name="SpawnListContainer" type="VBoxContainer" parent="CanvasLayer/SpawnListScroll"]
 layout_mode = 2
 
 [node name="Inventory" type="ScrollContainer" parent="CanvasLayer"]
-offset_left = 326.0
+offset_left = 421.0
 offset_right = 576.0
-offset_bottom = 324.0
+offset_bottom = 60.0
 
 [node name="InventoryList" type="VBoxContainer" parent="CanvasLayer/Inventory"]
 layout_mode = 2

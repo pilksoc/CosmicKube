@@ -8,6 +8,7 @@ extends CharacterBody2D
 @onready var inventoryContainer: VBoxContainer = get_tree().current_scene.find_child('CanvasLayer').find_child('Inventory').find_child('InventoryList')
 
 @onready var OtherObjects: Node2D = get_tree().current_scene.find_child('OtherObjects')
+@onready var BoxObject = preload('res://scenes/box/box.gd')
 
 @onready var uuid_util = preload('res://uuid.gd')
 signal player_did_move(new_pos: Vector2)
@@ -108,28 +109,32 @@ func itemSelectButton(uuid, name):
 	print("New selected Item ", selectedItem)
 
 func _input(event):
-	if !event.is_action("down") and ! event.is_action("up") and  !event.is_action("left") and ! event.is_action("right"):
+	if !event.is_action("down") and !event.is_action("Use") and ! event.is_action("up") and  !event.is_action("left") and ! event.is_action("right"):
 		return
 	
 	var vec = Input.get_vector("left", "right", "up", "down")
 
-	if Input.is_key_pressed(KEY_SPACE) and selectedItem != {}:
+	if event.is_action("Use"):
+		print("gdhlgjhs")
 		if inventory[selectedItem.id].amount > 0:
-			wsClient.send(JSON.stringify({
+			wsClient.send(JSON.stringify(
+			{
 				"initialised": true,
 				"player": playerInfo,
 				"action": {
 					"kind": 0,
 					"kube": {
-						"kubeId" : {
-							"uuid": selectedItem.id,
-							"name": selectedItem.name
-						},
-						"coordinates": [selectedTile.x, selectedTile.y]
+						"id": selectedItem.id,
+						"name": selectedItem.name,
 					},
-					"coordinates": [position.x, position.y]
-				}
-			}))
+					"coordinates": [selectedTile.x, selectedTile.y]
+				},
+			"coordinates": [position.x, position.y]
+			}
+			))
+			
+			var ser_res = JSON.parse_string(await wsClient.message_received)
+			print("Response from move: " + JSON.stringify(ser_res))
 			
 			if inventory[selectedItem.id].amount - 1 <= 0:
 				inventory.erase(selectedItem.id)
@@ -161,6 +166,12 @@ func _on_player_did_move(new_pos):
 	
 	for i in ser_res["grid"]["spaces"]:
 		if i["contains"].has("Player"):
+			pass
+		elif i["contains"].has("Kube"):
+			var obj = BoxObject.instance()
+			obj.transform.origin = Vector2(i["contains"]["coordinate"][0], i["contains"]["coordinate"][1])
+			obj.fetch_url("https://hack.djpiper28.co.uk/cache/kubeImageById/" + i["contains"]["Kube"]["uuid"])
+			OtherObjects.add_child(obj)
 			pass
 	
 	
