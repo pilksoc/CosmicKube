@@ -3,35 +3,49 @@ package model
 import (
 	"log"
 
+	"github.com/CosmicKube/kube_cache/aiStuff"
+	"github.com/CosmicKube/kube_cache/metrics"
 	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
+func SortKubesStr(kube1, kube2 *string) {
+	if *kube1 > *kube2 {
+		*kube1, *kube2 = *kube2, *kube1
+	}
+}
+
+func SortKubesUuid(kube1, kube2 *uuid.UUID) {
+	if kube1.String() > kube2.String() {
+		*kube1, *kube2 = *kube2, *kube1
+	}
+}
+
 type Kube struct {
-	Name string    `json:"name"`
-	Id   uuid.UUID `gorm:"primaryKey" json:"id"`
-	// Image []byte    `json:"image"`
+	Name  string    `gorm:"unique;not null" json:"name"`
+	Id    uuid.UUID `gorm:"primaryKey" json:"id"`
+	Image []byte    `gorm:"not null" json:"-"`
 }
 
 type KubeRecipe struct {
-	Id          uuid.UUID         `gorm:"primaryKey" json:"id"`
-  Output      uuid.UUID         `json:"outputId" gorm:"index:idx_output_id"`
-	OutputKube  *Kube             `json:"outputKube" gorm:"foreignKey:Output;references:Id"`
-  Ingredients []KubeRecipeLines `json:"ingredients"`
-}
+	Id         uuid.UUID `gorm:"primaryKey" json:"id"`
+	Output     uuid.UUID `json:"outputId" gorm:"index:idx_output_id;not null"`
+	OutputKube *Kube     `json:"outputKube" gorm:"foreignKey:Output;references:Id"`
 
-type KubeRecipeLines struct {
-  KubeRecipeId uuid.UUID `json:"kube_recipe_id" gorm:"index:idx_kube_recipe_id"`
-  KubeId       string    `json:"kube_id" gorm:"index:idx_kube_id"`
-	Kube         *Kube     `json:"kube" gorm:"foreignKey:KubeId;references:Id"`
+	Kube1Id uuid.UUID `json:"kube1_id" gorm:"index:idx_kube1_id;not null"`
+	Kube1   *Kube     `json:"-" gorm:"foreignKey:Kube1Id;references:Id"`
+
+	Kube2Id uuid.UUID `json:"kube2_id" gorm:"index:idx_kube2_id;not null"`
+	Kube2   *Kube     `json:"-" gorm:"foreignKey:Kube2Id;references:Id"`
 }
 
 type Database struct {
-	Db *gorm.DB
+	Db      *gorm.DB
+	Metrics *metrics.Metrics
 }
 
-func New(url string) *Database {
+func New(metrics *metrics.Metrics, ai *aiStuff.KubeAi, url string) *Database {
 	log.Println("Connecting to database...")
 	db, err := gorm.Open(postgres.Open(url), &gorm.Config{
 		PrepareStmt: true,
@@ -47,12 +61,84 @@ func New(url string) *Database {
 		log.Fatal(err)
 	}
 
+	database := &Database{Db: db, Metrics: metrics}
+	log.Println("Seeding database...")
+	database.seed(ai)
+
 	log.Println("Migrated database successfully")
-	return &Database{Db: db}
+	return database
+}
+
+func (db *Database) SetKubeImage(kube Kube, image []byte) error {
+  result := db.Db.Model(&kube).Update("image", image)
+  return result.Error
+}
+
+func (db *Database) GetKubeImage(id string) ([]byte, error) {
+	var kube Kube
+	result := db.Db.First(&kube, "id = ?", id)
+	return kube.Image, result.Error
 }
 
 func (db *Database) GetKube(id string) (Kube, error) {
 	var kube Kube
 	result := db.Db.First(&kube, "id = ?", id)
 	return kube, result.Error
+}
+
+func (db *Database) GetAllKubeRecipes() ([]KubeRecipe, error) {
+	var recipes []KubeRecipe
+	result := db.Db.Find(&recipes)
+	return recipes, result.Error
+}
+
+func (db *Database) GetAllKubes() ([]Kube, error) {
+	var kubes []Kube
+	result := db.Db.Find(&kubes)
+	return kubes, result.Error
+}
+
+func (db *Database) GetKubeRecipe(kube1, kube2 string) (KubeRecipe, error) {
+	SortKubesStr(&kube1, &kube2)
+
+	var recipe KubeRecipe
+	result := db.Db.First(&recipe, "kube1_id = ? AND kube2_id = ?", kube1, kube2)
+	return recipe, result.Error
+}
+
+func (db *Database) SetKubeRecipe(kube1, kube2 Kube, newKube string, image []byte) error {
+	kube1Id := kube1.Id
+	kube2Id := kube2.Id
+	SortKubesUuid(&kube1Id, &kube2Id)
+
+	log.Printf("Setting kube recipe: %s + %s = %s", kube1.Name, kube2.Name, newKube)
+	err := db.Db.Transaction(func(tx *gorm.DB) error {
+		newKubeObject := Kube{Name: newKube,
+			Id:    uuid.New(),
+			Image: image}
+		err := tx.Create(&newKubeObject).Error
+		if err != nil {
+			log.Printf("Cannot create new kube: %s", err)
+			return err
+		}
+
+		recipe := KubeRecipe{
+			Id:      uuid.New(),
+			Output:  newKubeObject.Id,
+			Kube1Id: kube1Id,
+			Kube2Id: kube2Id,
+		}
+		err = tx.Create(&recipe).Error
+		if err != nil {
+			log.Printf("Cannot create new kube recipe: %s", err)
+			return err
+		}
+		return nil
+	})
+
+	if err != nil {
+		log.Print("Saving the kube recipe failed")
+		return err
+	}
+	return nil
 }
