@@ -6,7 +6,6 @@ import (
 	"github.com/CosmicKube/kube_cache/aiStuff"
 	"github.com/CosmicKube/kube_cache/model"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type Server struct {
