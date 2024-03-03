@@ -102,7 +102,14 @@ func (ai *KubeAi) generateDalleForKube(kubeName string) ([]byte, error) {
 }
 
 func (ai *KubeAi) GenerateDalleForKube(kubeName string) ([]byte, error) {
-	if time.Since(ai.LastAccess) < apiRestTime {
+	for {
+		ai.Lock.Lock()
+		if time.Since(ai.LastAccess) > apiRestTime {
+			ai.LastAccess = time.Now()
+			ai.Lock.Unlock()
+			break
+		}
+		ai.Lock.Unlock()
 		time.Sleep(apiRestTime - time.Since(ai.LastAccess))
 	}
 
