@@ -42,9 +42,7 @@ fn recalculate_game(state: PlayerInfo) -> String {
         None => println!(""),
     }
 
-    //send action to database to get result
-    //send position to database to update
-    //
+    //send action to database to get result !!!<----
 
     let resp = json!({
         "grid" : "edited grid"
