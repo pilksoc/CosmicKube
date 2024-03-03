@@ -10,18 +10,18 @@ import (
 )
 
 func insertKube(ai *aiStuff.KubeAi, name string, tx *gorm.DB) error {
-  log.Printf("Checking if kube exists: %s", name)
-  if (tx.Where("name = ?", name).First(&Kube{}).RowsAffected > 0) {
-    return errors.New("Kube already exists")
-  }
+	log.Printf("Checking if kube exists: %s", name)
+	if (tx.Where("name = ?", name).First(&Kube{}).RowsAffected > 0) {
+		return errors.New("Kube already exists")
+	}
 
 	log.Printf("Inserting kube: %s", name)
-  image, err := ai.GenerateDalleForKube(name)
-  if err != nil {
-    log.Printf("Error generating Dalle for kube: %s", err)
-    return err
-  }
-  kube := Kube{Name: name, Id: uuid.New(), Image: image}
+	image, err := ai.GenerateDalleForKube(name)
+	if err != nil {
+		log.Printf("Error generating Dalle for kube: %s", err)
+		return err
+	}
+	kube := Kube{Name: name, Id: uuid.New(), Image: image}
 	return tx.Create(&kube).Error
 }
 
@@ -109,10 +109,10 @@ func (d *Database) seed(ai *aiStuff.KubeAi) {
 			}
 		}
 		return nil
-	}).Error
+	})
 
 	if err != nil {
-		log.Printf("Seeding database failed: %s", err())
+		log.Printf("Seeding database failed: %s", err)
 	}
 
 	var kubes, recipes int64
