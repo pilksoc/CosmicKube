@@ -6,6 +6,7 @@ import (
 
 	"github.com/CosmicKube/kube_cache/aiStuff"
 	"github.com/CosmicKube/kube_cache/model"
+	"github.com/CosmicKube/kube_cache/server"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -22,18 +23,12 @@ func main() {
 	}
 
 	log.Println("Using configuration for database...")
-	model.New(os.Getenv("DATABASE_URL"))
+  database := model.New(os.Getenv("DATABASE_URL"))
 
 	log.Println("Creating AI client...")
 	ai := aiStuff.New(os.Getenv("OPENAI_ENDPOINT"),
 		os.Getenv("OPENAI_API_KEY"),
 		os.Getenv("OPENAI_MODEL_ID"))
-
-	data, err := ai.GenerateKubeRecipe("water", "laptop")
-	if err != nil {
-		log.Fatal(err)
-	}
-  log.Printf("Data: %s", data)
 
 	log.Println("Starting server...")
 	router := gin.Default()
@@ -49,5 +44,8 @@ func main() {
 		},
 	}))
 
+  log.Println("Start up the API")
+  server := server.New(database, ai)
+  server.Use(router)
 	log.Fatal(router.Run("0.0.0.0:8080"))
 }
