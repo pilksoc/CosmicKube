@@ -9,6 +9,7 @@ extends CharacterBody2D
 
 @onready var OtherObjects: Node2D = get_tree().current_scene.find_child('OtherObjects')
 @onready var BoxObject = preload('res://scenes/box/box.tscn')
+@onready var PlayerObject = preload('res://scenes/other_player/other_player.tscn')
 
 @onready var uuid_util = preload('res://uuid.gd')
 signal player_did_move(new_pos: Vector2)
@@ -174,6 +175,9 @@ func _on_player_did_move(new_pos):
 	
 	for i in ser_res["grid"]["spaces"]:
 		if i["contains"].has("Player"):
+			var obj = PlayerObject.instantiate()
+			obj.transform.origin = Vector2(i["contains"]["coordinate"][0], i["contains"]["coordinate"][1])
+			OtherObjects.add_child(obj)
 			pass
 		elif i["contains"].has("Kube"):
 			var obj = BoxObject.instance()
