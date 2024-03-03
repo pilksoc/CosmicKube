@@ -5,4 +5,4 @@ pub mod player;
 pub mod llm;
 pub mod local_grid;
 
-type Coordinate = [u64; 2];
+pub type Coordinate = [u64; 2];
