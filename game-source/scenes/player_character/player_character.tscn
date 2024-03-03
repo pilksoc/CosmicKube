@@ -1,7 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://xqoiyxrn10js"]
+[gd_scene load_steps=9 format=3 uid="uid://xqoiyxrn10js"]
 
 [ext_resource type="Script" path="res://scenes/player_character/player_character.gd" id="1_rmbqt"]
-[ext_resource type="Texture2D" uid="uid://bdap4f6w37byq" path="res://assets/Illustration95.png" id="2_0gsa3"]
+[ext_resource type="Texture2D" uid="uid://cn58l1sya667a" path="res://assets/player.png" id="2_fja5p"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nrvy8"]
 size = Vector2(14, 15.5)
@@ -30,7 +30,7 @@ tracks/0/path = NodePath("../Sprite2D:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0.0161553, 0.319068, 0.69064),
+"times": PackedFloat32Array(0.0161553, 0.319068, 0.6),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
 "values": [6, 7, 8]
@@ -51,9 +51,25 @@ tracks/0/keys = {
 "values": [3, 4, 5]
 }
 
+[sub_resource type="Animation" id="Animation_ok6dn"]
+resource_name = "left"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [9, 10, 10]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_hbknw"]
 _data = {
 "down": SubResource("Animation_17yri"),
+"left": SubResource("Animation_ok6dn"),
 "right": SubResource("Animation_v72g0"),
 "up": SubResource("Animation_sndo4")
 }
@@ -66,9 +82,10 @@ target_position = Vector2(0, 19)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.458, 0.368)
-texture = ExtResource("2_0gsa3")
+texture = ExtResource("2_fja5p")
 hframes = 3
-vframes = 3
+vframes = 4
+frame = 7
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position_smoothing_enabled = true
@@ -90,3 +107,17 @@ root_node = NodePath("../RayCast2D")
 libraries = {
 "": SubResource("AnimationLibrary_hbknw")
 }
+
+[node name="AnimationPlayer2" type="AnimationPlayer" parent="AnimationPlayer"]
+root_node = NodePath("../RayCast2D")
+libraries = {
+"": SubResource("AnimationLibrary_hbknw")
+}
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="AnimationPlayer/AnimationPlayer2"]
+root_node = NodePath("../RayCast2D")
+libraries = {
+"": SubResource("AnimationLibrary_hbknw")
+}
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
