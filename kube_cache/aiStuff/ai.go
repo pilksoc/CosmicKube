@@ -8,16 +8,20 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 )
 
 type KubeAi struct {
 	Endpoint, Apikey, ModelId string
 	Metrics                   *metrics.Metrics
+	LastAccess                time.Time
 }
+
+const apiRestTime = time.Second * 5
 
 func New(metrics *metrics.Metrics, endpoint, apiKey, modelId string) *KubeAi {
 	return &KubeAi{
-    Metrics: metrics,
+		Metrics:  metrics,
 		Endpoint: endpoint,
 		Apikey:   apiKey,
 		ModelId:  modelId,
@@ -82,7 +86,7 @@ type aiReq struct {
 }
 
 func (ai *KubeAi) generateKubeRecipe(kubeName1, kubeName2 string) (string, error) {
-	url := fmt.Sprintf("%s/openai/deployments/Dalle3/images/generations?api-version=2024-02-15-preview", ai.Endpoint)
+	url := fmt.Sprintf("%s/openai/deployments/%s/chats/completions/?api-version=2024-02-15-preview", ai.Endpoint, ai.ModelId)
 
 	postReq := aiReq{
 		Messages: []aiMessage{
@@ -135,10 +139,10 @@ func (ai *KubeAi) generateKubeRecipe(kubeName1, kubeName2 string) (string, error
 		return string(body), nil
 	}
 
-  if len(aiResponse.Choices) == 0 {
-    log.Printf("The silly server sent %s, this is very bad", body)
-    return string(body), nil
-  }
+	if len(aiResponse.Choices) == 0 {
+		log.Printf("The silly server sent %s, this is very bad", body)
+		return string(body), nil
+	}
 
 	actualLegitMessage := aiResponse.Choices[0].Message.Content
 
@@ -159,6 +163,11 @@ func (ai *KubeAi) generateKubeRecipe(kubeName1, kubeName2 string) (string, error
 }
 
 func (ai *KubeAi) GenerateKubeRecipe(kubeName1, kubeName2 string) (string, error) {
+	if time.Since(ai.LastAccess) < apiRestTime {
+		time.Sleep(apiRestTime - time.Since(ai.LastAccess))
+	}
+	ai.LastAccess = time.Now()
+
 	res, err := ai.generateKubeRecipe(kubeName1, kubeName2)
 	if err != nil {
 		ai.Metrics.IncrementDalleErrors()

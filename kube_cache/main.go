@@ -24,7 +24,7 @@ func main() {
 		log.Println(err)
 	}
 
-  metrics := metrics.New()
+	metrics := metrics.New()
 
 	log.Println("Creating AI client...")
 	ai := aiStuff.New(metrics, os.Getenv("OPENAI_ENDPOINT"),
@@ -54,7 +54,7 @@ func main() {
 		}
 		return url
 	}
-  
+
 	p.Use(router)
 
 	router.Use(cors.New(cors.Config{
