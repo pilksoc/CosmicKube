@@ -60,7 +60,7 @@ func _ready():
 		obj.transform.origin = Vector2(randi() % 300, randi() % 300)
 		var a = spawnList.keys()
 		a = a[randi() % a.size()]
-		obj.fetch_url = "https://hack.djpiper28.co.uk/cache/kubeImageById/" + a
+		obj.fetch_url = "https://hack.djpiper28.co.uk/cache/kubeImageById/" + spawnList[a]
 		OtherObjects.add_child(obj)
 
 	playerInfo = {
@@ -123,9 +123,8 @@ func _input(event):
 	
 	var vec = Input.get_vector("left", "right", "up", "down")
 
-	if event.is_action("Use"):
-		print("gdhlgjhs")
-		if inventory[selectedItem.id].amount > 0 and !selectedItem.has("id"):
+	if event.is_action("Use") and selectedItem.has("id"):
+		if inventory[selectedItem.id].amount > 0:
 			wsClient.send(JSON.stringify(
 			{
 				"initialised": true,
@@ -142,15 +141,15 @@ func _input(event):
 			}
 			))
 			
-			var ser_res = JSON.parse_string(await wsClient.message_received)
-			print("Response from move: " + JSON.stringify(ser_res))
-			
 			print(selectedItem)
 			if inventory[selectedItem.id].amount - 1 <= 0:
 				inventory.erase(selectedItem.id)
 				selectedItem = { }
 			else:
 				inventory[selectedItem.id].amount -= 1
+			
+			var ser_res = JSON.parse_string(await wsClient.message_received)
+			print("Response from move: " + JSON.stringify(ser_res))
 			redrawInventory()
 			
 
