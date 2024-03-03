@@ -1,0 +1,55 @@
+name: "Build CosmicKube game server"
+on: 
+    push:
+        branches:
+            - main
+jobs:
+    build-server:
+        name: "Build Game Server"
+        runs-on: ubuntu-20.04
+        permissions: 
+            packages: write
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Install Rust toolchain
+              uses: actions-rs/toolchain@v1
+              with:
+                toolchain: stable
+                default: true
+                override: true
+
+            - name: Build
+              run: |
+                cd backend
+                cargo build --all --release && strip target/release/cosmic_kube && mv target/release/cosmic_kube target/release/cosmic_kube_amd64
+            
+            - name: Upload Artifact
+              uses: actions/upload-artifact@v1
+              with:
+                name: server
+                path: backend/target/release/cosmic_kube_amd64
+              
+            
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v2
+            - name: Login to DockerHub
+              uses: docker/login-action@v2
+              with:
+                registry: ghcr.io
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+
+                # this will push the docker images to the github container registry
+                # you will need to give actions permission to push there first
+            - name: Build and push
+              id: docker_build
+              uses: docker/build-push-action@v3
+              with:
+                context: .
+                file: server.Dockerfile
+                push: true
+                tags: |
+                    ghcr.io/pilksoc/cosmickube:dev-latest
+                    ghcr.io/pilksoc/cosmickube:dev-${{ github.run_number }}
