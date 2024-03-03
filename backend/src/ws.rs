@@ -58,7 +58,7 @@ pub async fn client_connection(ws: WebSocket, clients: Clients) {
 
 
 // ->recieve client game info <- send back client game state
-// wwwwwwwwwwwwwwwwwwwww i am so tired 
+// wwwwwwwwwwwwwwwwwwwww i am so tired
 async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
     println!("received message from {}: {:?}", client_id, msg); //debug
 

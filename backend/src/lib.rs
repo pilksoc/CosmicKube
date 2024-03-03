@@ -8,6 +8,8 @@ pub mod kube;
 pub mod player;
 pub mod llm;
 pub mod local_grid;
+pub mod cache_client;
+pub mod recipe;
 
 #[macro_use]
 extern crate lazy_static;

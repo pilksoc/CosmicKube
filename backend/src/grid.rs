@@ -7,6 +7,7 @@ fn distance([a, b]: Coordinate, [x, y]: Coordinate) -> u64 {
     (a.abs_diff(x)).max(b.abs_diff(y))
 }
 
+#[derive(Debug, Clone, Copy)]
 /// The direction in which to grow. For example, going from 3 to 9 would give a `GrowDirection::Expand`.
 enum GrowDirection {
     Shrink,
@@ -56,6 +57,10 @@ impl Grid {
     pub fn insert(&mut self, space: Space) {
         self.spaces.insert(space.coordinate, space);
     }
+    /// Removes the space at the given coordinate. If there is no recorded space there, then this returns [`std::option::Option::None`].
+    pub fn remove(&mut self, coordinate: Coordinate) -> Option<Space> {
+        self.spaces.remove(&coordinate)
+    }
     /// Checks that a coordinate is not beyond the bounds of the grid.
     pub fn in_bounds(&self, coordinate: [u64; 2]) -> bool {
         coordinate[0] < self.width && coordinate[1] < self.height
@@ -67,7 +72,7 @@ impl Grid {
     /// ```rust
     /// use cosmic_kube::grid::Grid;
     /// use cosmic_kube::space::{ Space, SpaceKind };
-    /// 
+    ///
     /// let grid = Grid::from_spaces(
     ///     vec![
     ///         Space::new([0, 2], SpaceKind::EmptySpace),
@@ -83,6 +88,9 @@ impl Grid {
         self.spaces.get(&coordinate)
     }
 
+    /// Gets the neighbours that are *n* squares away.
+    ///
+    /// In other words, this will look at all the rings which are 1, 2, …, n squares away from the coordinate. It will return any squares found in these rings.
     pub fn get_neighbours_n_away(&self, coordinate: Coordinate, n: u64) -> Vec<&Space> {
         let mut coords: Vec<Coordinate> = Vec::new();
         let mut stack: Vec<Coordinate> = self.neighbour_coords_in_bounds(coordinate);
@@ -97,18 +105,18 @@ impl Grid {
                 .filter(|c|
                     distance(coordinate, **c) <= n && distance(coordinate, **c) > distance(coord, **c)
                 )
-            )
+            );
         }
         let mut to_return: Vec<&Space> = Vec::new();
         for coord in coords {
-            match self.spaces.get(&coord) {
-                Some(space) => to_return.push(space),
-                None => (),
+            if let Some(space) = self.spaces.get(&coord) {
+                to_return.push(space)
             }
         }
         to_return
     }
 
+    /// Gets all the neighbours (directly adjacent squares incl. diagonally) of the coordinate if they're in bounds.
     fn neighbour_coords_in_bounds(&self, coordinate: Coordinate) -> Vec<Coordinate> {
         let coordinates: [[Option<u64>; 2]; 8] = [
             [coordinate[0].checked_add(1), Some(coordinate[1])],
@@ -129,7 +137,7 @@ impl Grid {
             .collect::<Vec<_>>()
     }
 
-    /// Returns neighbours which are in the grid *and* which aren't [`crate::space::SpaceKind::EmptySpace`]s.
+    /// Returns neighbours (adjacent incl. diagonally) which are in the grid *and* which aren't [`crate::space::SpaceKind::EmptySpace`]s.
     pub fn get_nonempty_neighbours(&self, coordinate: Coordinate) -> Vec<&Space> {
         self.neighbour_coords_in_bounds(coordinate).iter()
             .map(|coord| self.get_space(*coord))
@@ -206,13 +214,27 @@ impl Grid {
     }
 
     /// This will expand the grid size and change the coordinates of the respective kubes.
-    /// 
+    ///
     /// The change in size can be thought of as "rings of squares" to be added around the outside of the grid. So if the grid used to be a 2×2 grid, adding a ring of squares around the outside will give a 4×4 square.
+    ///
+    /// <div class="warning">Warning! This function may use a lot of memory! When resizing the grid, the program needs to copy all of the grid's contents to a new `Vec`. If the grid is densely populated then take care when calling it.</div>
+    ///
+    /// # Errors
+    ///
+    /// Will fail if the resize request is invalid, if the new grid will be too big, (bigger than 2^64 - 1).
     pub fn expand_grid(&mut self, rings_to_add: u64) -> Result<(), ResizeError> {
         self.change_grid_by_rings(rings_to_add, GrowDirection::Expand)
     }
 
     /// Like [`crate::grid::Grid::expand_grid`], but instead of expanding, this shrinks.
+    ///
+    /// <div class="warning">Warning! This function may use a lot of memory! When resizing the grid, the program needs to copy all of the grid's contents to a new `Vec`. If the grid is densely populated then take care when calling it.</div>
+    ///
+    /// # Errors
+    ///
+    /// Will fail if the resize request is invalid.
+    /// - If the new grid will be too small, (smaller than 1).
+    /// - If there is a Kube near the edge such that it would be "cut off" when the rings are removed.
     pub fn shrink_grid(&mut self, rings_to_shrink_by: u64) -> Result<(), ResizeError> {
         self.change_grid_by_rings(rings_to_shrink_by, GrowDirection::Shrink)
     }
