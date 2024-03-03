@@ -26,11 +26,36 @@ func (s *Server) Use(engine *gin.Engine) {
 	engine.GET("/kubeRecipes", s.GetAllKubeRecipes)
 	engine.GET("/kubeById/:id", s.GetKube)
 	engine.GET("/kubeImageById/:id", s.GetKubeImage)
+  engine.GET("/kubeImageByIdNew/:id", s.RegenerateImage)
 	engine.GET("/kubeRecipeByIds/:id1/:id2", s.GetKubeRecipe)
 }
 
 func (s *Server) CacheMetrics(c *gin.Context) {
 	c.Data(200, "text/plain", []byte(s.Metrics.String()))
+}
+
+func (s *Server) RegenerateImage(c *gin.Context) {
+  id := c.Param("id")
+  kube, err := s.Database.GetKube(id)
+  if err != nil {
+    c.JSON(500, gin.H{"error": err.Error()})
+    return
+  }
+
+  image, err := s.Ai.GenerateDalleForKube(kube.Name)
+  if err != nil {
+    log.Printf("Error generating Dalle for kube: %s", err)
+    c.JSON(500, gin.H{"error": err.Error()})
+    return
+  }
+
+  err = s.Database.SetKubeImage(kube, image)
+  if err != nil {
+    log.Printf("Cannot save kube image: %s", err)
+    c.JSON(500, gin.H{"error": err.Error()})
+    return
+  }
+  c.JSON(200, gin.H{"message": "Image regenerated"})
 }
 
 func (s *Server) GetAllKubeRecipes(c *gin.Context) {
