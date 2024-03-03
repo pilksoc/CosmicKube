@@ -1,12 +1,14 @@
 use core::fmt;
 use cosmic_kube::kube::Kube;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{json, Value};
 use serde_repr::{Serialize_repr, Deserialize_repr};
+use rand::Rng;
 
 // this is the data we expect to recieve from the player
 #[derive(Serialize, Deserialize)]
 pub struct PlayerInfo {
+    initialised: bool,
     player: String, //Player, //the player requesting the data
     coordinates: [u64; 2], //current player coordinates
     action: Option<Action>, // 0, block picked up 1, block placed
@@ -43,10 +45,19 @@ fn recalculate_game(state: PlayerInfo) -> String {
     }
 
     //send action to database to get result !!!<----
+    let resp: Value;
 
-    let resp = json!({
-        "grid" : "edited grid"
-    });
+    if state.initialised {
+        resp = json!({
+            "grid" : "edited grid"
+        });
+    } else {
+        let mut rng = rand::thread_rng();
+        resp = json!({
+            "coordinates" : [rng.gen_range(0..2048), rng.gen_range(0..2048)]
+        });
+    }
+    
 
    resp.to_string()
 }
