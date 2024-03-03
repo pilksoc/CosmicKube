@@ -157,10 +157,10 @@ func make_player_state(make_player_state:Vector2):
 func _on_player_did_move(new_pos):
 	wsClient.send(make_player_state(new_pos))
 	var ser_res = JSON.parse_string(await wsClient.message_received)
-	print("Response from move: " + ser_res)
+	print("Response from move: " + JSON.stringify(ser_res))
 	
 	for i in ser_res["grid"]["spaces"]:
-		if i["contains"].has_key("Player"):
+		if i["contains"].has("Player"):
 			pass
 	
 	
