@@ -11,9 +11,16 @@ config_version=5
 [application]
 
 config/name="Cosmic Kube"
-run/main_scene="res://main.tscn"
+run/main_scene="res://scenes/main/main.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
-config/icon="res://icon.svg"
+
+[autoload]
+
+WebSockets="*res://WebSockets.gd"
+
+[display]
+
+window/stretch/mode="viewport"
 
 [input]
 

@@ -1,20 +1,21 @@
 [gd_scene load_steps=3 format=3 uid="uid://xqoiyxrn10js"]
 
 [ext_resource type="Texture2D" uid="uid://cf7mjmudnjchn" path="res://assets/lil_guy.png" id="1_rfqfo"]
-[ext_resource type="Script" path="res://player_character.gd" id="1_rmbqt"]
+[ext_resource type="Script" path="res://scenes/player_character/player_character.gd" id="1_rmbqt"]
 
 [node name="PlayerCharacter" type="CharacterBody2D"]
 script = ExtResource("1_rmbqt")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(-0.5, 3)
-scale = Vector2(1.002, 1.008)
+scale = Vector2(0.458, 0.368)
 texture = ExtResource("1_rfqfo")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
-visible = false
-position = Vector2(-0.5, 3)
-scale = Vector2(1.002, 1.008)
+scale = Vector2(0.458, 0.368)
 polygon = PackedVector2Array(52, -166.9, 52, -165.3, 63, -160.3, 63, -158.7, 71, -148.7, 71, -145.4, 74, -137.4, 74, -120, 77, -96.1, 77, -78, 82, 49, 80.9, 49, 78.9, 124, 77.5, 124, 74.6, 136, 73, 136, 68, 143, 65.4, 143, 47.4, 150, 40, 150, -60, 149, -60, 147.8, -72, 146.8, -72, 144.7, -79, 136.8, -79, 132.4, -83, 123.4, -83, 121, -80, 56, -80, -49, -80.8, -49, -84, -84.9, -84, -90, -82, -139, -80.5, -139, -78.6, -147, -76.9, -147, -62.8, -160, -60.4, -160, -49.4, -165, -39.4, -165, -26, -167.7, -26, -169.1)
+
+[node name="CollisionPolygon2D2" type="CollisionPolygon2D" parent="."]
+scale = Vector2(0.458, 0.368)
+polygon = PackedVector2Array(84, 152.9, 84, 156.8, 80.8, 160, 76.9, 160, 73.7, 155.1, 74.8, 153, 76.2, 153, 77, 152.2, 77, 150.8, 79.1, 149.7)
