@@ -1,4 +1,4 @@
-use crate::kube::{Kube, KubeId};
+use crate::kube::{Kube};
 use crate::recipe::Recipe;
 use serde::Deserialize;
 use thiserror::Error;
@@ -45,12 +45,12 @@ impl CacheClient {
         let res = reqwest::get(self.url.join("kubeRecipes").unwrap()).await?.text().await?;
         Ok(serde_json::from_str(&res)?)
     }
-    pub async fn get_kube_by_id(&self, id: KubeId) -> Result<Kube, RestError> {
-        let res = reqwest::get(self.url.join(format!("kube/:{}", id.uuid()).as_str()).unwrap()).await?.text().await?;
+    pub async fn get_kube_by_id(&self, id: Uuid) -> Result<Kube, RestError> {
+        let res = reqwest::get(self.url.join(format!("kubeById/{}", id).as_str()).unwrap()).await?.text().await?;
         Ok(serde_json::from_str(&res)?)
     }
     pub async fn get_recipe_by_id(&self, id1: Uuid, id2: Uuid) -> Result<Recipe, RestError> {
-        let res = reqwest::get(self.url.join(format!("kubeRecipeByIds/:{}/:{}", id1, id2).as_str()).unwrap()).await?.text().await?;
+        let res = reqwest::get(self.url.join(format!("kubeRecipeByIds/{}/{}", id1, id2).as_str()).unwrap()).await?.text().await?;
         Ok(serde_json::from_str(&res)?)
     }
 }
@@ -60,13 +60,23 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn get_kubes() {
+    async fn try_get_kubes() {
         let client = CacheClient::from_url("https://hack.djpiper28.co.uk/cache/").unwrap();
-        let kubes = client.get_kubes().await.unwrap();
+        let mut kubes = client.get_kubes().await.unwrap();
         let control_kubes_string = String::from(
-"[{\"name\":\"hydrogen\",\"id\":\"153227c6-c069-4748-b5aa-aafac8abef00\"},{\"name\":\"oxygen\",\"id\":\"3ffe4c9e-5d35-42c9-a70e-1d80c544bdbb\"},{\"name\":\"nitrogen\",\"id\":\"bb155bf1-7200-45e7-b126-f2882f7aecaa\"},{\"name\":\"calcium\",\"id\":\"5d75a6e7-b45b-4c5f-ae14-042ad17b3156\"},{\"name\":\"iron\",\"id\":\"a0e89ba5-41cb-4a8d-895e-866f0b2004f2\"},{\"name\":\"aluminium\",\"id\":\"f475d09e-75e7-4096-af5b-a00de9ae5e48\"},{\"name\":\"uranium\",\"id\":\"615b14af-d4a8-4e57-8a6c-190110114ad1\"},{\"name\":\"sodium\",\"id\":\"485cbd9d-5608-4b6a-afbe-52829663090d\"},{\"name\":\"chlorine\",\"id\":\"dbe34fef-e969-4f4d-b148-7898d6de699c\"},{\"name\":\"light\",\"id\":\"0652bcac-e87b-4323-9d05-939ddfd1c726\"},{\"name\":\"time\",\"id\":\"efd60b9a-dcc4-4690-a087-c1aba4a7d16e\"},{\"name\":\"silicon\",\"id\":\"c37997c9-e7ba-44d6-b726-97aec89545f8\"},{\"name\":\"water\",\"id\":\"bf1ed678-3be7-42d7-8544-82124b6c6111\"},{\"name\":\"tap water\",\"id\":\"7bc0ee7b-6772-4315-84dc-93887e007bd6\"},{\"name\":\"salt\",\"id\":\"d24a2af2-eed2-40af-a064-001de3545e84\"},{\"name\":\"sea water\",\"id\":\"c622c644-1590-4e4f-b7ae-42fb358ad004\"},{\"name\":\"air\",\"id\":\"ad2ed248-7bc8-469e-b9bb-7b1bc4878cad\"},{\"name\":\"rust\",\"id\":\"1c213d9d-b060-45c5-a8e0-48c45b01c30b\"},{\"name\":\"feldspar\",\"id\":\"9796d796-d166-4a7e-895a-fd9bf65dd3ee\"},{\"name\":\"sand\",\"id\":\"2d727d5b-a71c-49c3-84ef-cffa2fe47f9a\"},{\"name\":\"dirt\",\"id\":\"b4a9dc42-273a-4dc6-9c76-c51a847b743c\"},{\"name\":\"beach\",\"id\":\"e7dcaab2-1c0a-4af2-a5a5-38995f4c0167\"},{\"name\":\"earth\",\"id\":\"39807784-9d57-48fc-8e7a-e877e975eb9c\"},{\"name\":\"life\",\"id\":\"dc383720-1649-4119-ad0a-68f209b237d5\"},{\"name\":\"age\",\"id\":\"181ec200-54aa-4dca-821d-b88efe6b129d\"},{\"name\":\"energy\",\"id\":\"abc9bcf7-47d2-46f0-bf6e-f70a126820b7\"},{\"name\":\"rock\",\"id\":\"0b3ab01f-4fc6-4bc8-8acc-5ae2a7fb640f\"},{\"name\":\"fire\",\"id\":\"bbee222a-4f4a-477a-8be8-2e6f314b5a36\"},{\"name\":\"glass\",\"id\":\"f84b34f7-5406-4795-a56d-9d07c4b3c9d5\"},{\"name\":\"steam\",\"id\":\"a38fd90e-c2ff-4955-9161-462018dfaf52\"},{\"name\":\"radioactive water\",\"id\":\"6bffa307-4114-40ff-bf43-6934945b1753\"},{\"name\":\"nuclear reactor\",\"id\":\"021b0835-e16e-4163-ac66-4f7c7b78ce7e\"}]"
+"[{\"name\":\"hydrogen\",\"id\":\"cdede93f-d0d7-4b4a-9fde-2a909444c58d\"},{\"name\":\"oxygen\",\"id\":\"8ddcf7ad-61f6-47ff-a49c-4abcec21d6a1\"},{\"name\":\"nitrogen\",\"id\":\"59a64f5b-bcf4-4d2d-bb7f-bc4eceaf41e5\"},{\"name\":\"calcium\",\"id\":\"2b006956-063d-4ca2-b75d-f6e5d67455c9\"},{\"name\":\"iron\",\"id\":\"5e930e14-4597-49b3-95fa-3e6dcc40b1ae\"},{\"name\":\"aluminium\",\"id\":\"d076033a-c583-4d38-8094-249a7fe2972b\"},{\"name\":\"uranium\",\"id\":\"82ac0ed4-62e3-4c5e-af3e-024c38285227\"},{\"name\":\"sodium\",\"id\":\"1c7fda1b-af90-411d-8162-8fd04c4890d3\"},{\"name\":\"chlorine\",\"id\":\"061f6efd-0067-4d71-92b8-a0b58562b906\"},{\"name\":\"light\",\"id\":\"e38ba705-58c1-469d-8eff-7cc01b94fd46\"},{\"name\":\"time\",\"id\":\"6991989a-f347-48eb-8c67-ade4cdc010d0\"},{\"name\":\"silicon\",\"id\":\"72650f96-011b-404d-aba0-2c8aa2f17aeb\"},{\"name\":\"water\",\"id\":\"8cf89e77-bf8b-4cf4-9941-46b853df4480\"},{\"name\":\"tap water\",\"id\":\"5ca230bc-135e-4be8-8be3-7c7c1b3e5484\"},{\"name\":\"salt\",\"id\":\"540710d4-5d7d-42f6-b9b7-aad181affbcf\"},{\"name\":\"sea water\",\"id\":\"74102256-00b5-42aa-9665-1bc81f13c18b\"},{\"name\":\"air\",\"id\":\"88bb179c-0d91-4322-a4e5-d3862bf83a31\"},{\"name\":\"rust\",\"id\":\"ad92587b-1643-469e-8357-1d6ec5ab6380\"},{\"name\":\"feldspar\",\"id\":\"2adfa430-faa4-4ecd-95e1-c6cc8c85f3b5\"},{\"name\":\"sand\",\"id\":\"1db355de-1404-4e7c-bf8b-a6b3355b9dc4\"},{\"name\":\"dirt\",\"id\":\"649e8325-530b-4abb-8fe0-5b79b395e84f\"},{\"name\":\"beach\",\"id\":\"03f9f164-be03-4de3-b5b4-c7549c1ef9e4\"},{\"name\":\"earth\",\"id\":\"66744f80-ccec-4c8b-9025-9edbb75df0a6\"},{\"name\":\"life\",\"id\":\"abd2f9a5-34cd-4b3f-941f-8cf934f6b967\"},{\"name\":\"age\",\"id\":\"bda3c6c5-3b79-418d-8d24-cc533a509065\"},{\"name\":\"energy\",\"id\":\"b4eba917-2179-4cd4-a64e-316fe005f11e\"},{\"name\":\"rock\",\"id\":\"3c545935-1382-4c3d-9771-1fa8492f1b77\"},{\"name\":\"fire\",\"id\":\"1e2e14df-f36b-43a4-9a2a-5112f84abb52\"},{\"name\":\"glass\",\"id\":\"12ec3f8d-0986-42d7-acc2-e6af8ba1842a\"}]"
         );
-        let control_kubes: Vec<Kube> = serde_json::from_str(&control_kubes_string).unwrap();
+        let mut control_kubes: Vec<Kube> = serde_json::from_str(&control_kubes_string).unwrap();
+        kubes.sort();
+        control_kubes.sort();
         assert_eq!(control_kubes, kubes)
+    }
+    #[tokio::test]
+    async fn try_kube_by_id() {
+        let client = CacheClient::from_url("https://hack.djpiper28.co.uk/cache/").unwrap();
+        let kube = client.get_kube_by_id(Uuid::parse_str("5e930e14-4597-49b3-95fa-3e6dcc40b1ae").unwrap()).await.unwrap();
+        let expected_string = String::from("{\"name\":\"iron\",\"id\":\"5e930e14-4597-49b3-95fa-3e6dcc40b1ae\"}");
+        let expected_kube: Kube = serde_json::from_str(&expected_string).unwrap();
+        assert_eq!(expected_kube, kube);
     }
 }
