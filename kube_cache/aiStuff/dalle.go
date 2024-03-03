@@ -103,8 +103,9 @@ func (ai *KubeAi) generateDalleForKube(kubeName string) ([]byte, error) {
 func (ai *KubeAi) GenerateDalleForKube(kubeName string) ([]byte, error) {
 	img, err := ai.generateDalleForKube(kubeName)
 	if err != nil {
+		ai.Metrics.IncrementDalleErrors()
 		log.Println("Cannot generate image falling back to default image")
-		defaultFile, err := os.Create("default.png")
+		defaultFile, err := os.Open("default.png")
 		if err != nil {
 			log.Printf("Error creating default file: %s", err)
 			return nil, err
@@ -118,5 +119,6 @@ func (ai *KubeAi) GenerateDalleForKube(kubeName string) ([]byte, error) {
 
 		return img, nil
 	}
+	ai.Metrics.IncrementDalleRequests()
 	return img, nil
 }

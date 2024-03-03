@@ -17,7 +17,7 @@ func (s *Server) Index(c *gin.Context) {
 	for _, kube := range kubes {
 		kubesHtml += fmt.Sprintf(`<div style="max-width: 100px; max-height: 100px;">
       <h3>%s</h3>
-      <img src="/kubeImageById/%s" style="max-width: 100px; max-height: 100px;"/>
+      <img src="./kubeImageById/%s" style="max-width: 100px; max-height: 100px;"/>
     </div>`, kube.Name, kube.Id)
 	}
 
@@ -29,14 +29,14 @@ func (s *Server) Index(c *gin.Context) {
   <h1>Kube Cache</h1>
   <h2>Endpoints</h2>  
   <ul>
-    <li><a href="/kubes">/kubes</a></li>
-    <li><a href="/kubeById/:id">/kubeById/:id</a></li>
-    <li><a href="/kubeImageById/:id">/kubeImageById/:id</a></li>
-    <li><a href="/kubeRecipes">/kubeRecipes</a></li>
-    <li><a href="/kubeRecipeByIds/:id1/:id2">/kubeRecipeByIds/:id1/:id2</a></li>
+    <li><a href="./kubes">/kubes</a></li>
+    <li><a href="./kubeById/:id">/kubeById/:id</a></li>
+    <li><a href="./kubeImageById/:id">/kubeImageById/:id</a></li>
+    <li><a href="./kubeRecipes">/kubeRecipes</a></li>
+    <li><a href="./kubeRecipeByIds/:id1/:id2">/kubeRecipeByIds/:id1/:id2</a></li>
   </ul>
   <h2>Kubes</h2>
-  <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px; width: 100%">
+  <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px;">
     %s
   </div>
 </body>`, kubesHtml)

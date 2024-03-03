@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/CosmicKube/kube_cache/metrics"
 	"io"
 	"log"
 	"net/http"
@@ -11,10 +12,12 @@ import (
 
 type KubeAi struct {
 	Endpoint, Apikey, ModelId string
+	Metrics                   *metrics.Metrics
 }
 
-func New(endpoint, apiKey, modelId string) *KubeAi {
+func New(metrics *metrics.Metrics, endpoint, apiKey, modelId string) *KubeAi {
 	return &KubeAi{
+    Metrics: metrics,
 		Endpoint: endpoint,
 		Apikey:   apiKey,
 		ModelId:  modelId,
@@ -78,7 +81,7 @@ type aiReq struct {
 	TopP             float32     `json:"top_p"`
 }
 
-func (ai *KubeAi) GenerateKubeRecipe(kubeName1, kubeName2 string) (string, error) {
+func (ai *KubeAi) generateKubeRecipe(kubeName1, kubeName2 string) (string, error) {
 	url := fmt.Sprintf("%s/openai/deployments/Dalle3/images/generations?api-version=2024-02-15-preview", ai.Endpoint)
 
 	postReq := aiReq{
@@ -146,5 +149,15 @@ func (ai *KubeAi) GenerateKubeRecipe(kubeName1, kubeName2 string) (string, error
 		return actualLegitMessage, nil
 	}
 
+	ai.Metrics.IncrementGptRequests()
 	return aiResp2.Name, nil
+}
+
+func (ai *KubeAi) GenerateKubeRecipe(kubeName1, kubeName2 string) (string, error) {
+	res, err := ai.generateKubeRecipe(kubeName1, kubeName2)
+	if err != nil {
+		ai.Metrics.IncrementDalleErrors()
+		return "", err
+	}
+	return res, nil
 }

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/CosmicKube/kube_cache/aiStuff"
+	"github.com/CosmicKube/kube_cache/metrics"
 	"github.com/CosmicKube/kube_cache/model"
 	"github.com/CosmicKube/kube_cache/server"
 	"github.com/gin-contrib/cors"
@@ -23,13 +24,15 @@ func main() {
 		log.Println(err)
 	}
 
+  metrics := metrics.New()
+
 	log.Println("Creating AI client...")
-	ai := aiStuff.New(os.Getenv("OPENAI_ENDPOINT"),
+	ai := aiStuff.New(metrics, os.Getenv("OPENAI_ENDPOINT"),
 		os.Getenv("OPENAI_API_KEY"),
 		os.Getenv("OPENAI_MODEL_ID"))
 
 	log.Println("Using configuration for database...")
-	database := model.New(ai, os.Getenv("DATABASE_URL"))
+	database := model.New(metrics, ai, os.Getenv("DATABASE_URL"))
 
 	log.Println("Starting server...")
 	router := gin.Default()
@@ -51,6 +54,7 @@ func main() {
 		}
 		return url
 	}
+  
 	p.Use(router)
 
 	router.Use(cors.New(cors.Config{
@@ -69,7 +73,7 @@ func main() {
 	log.Println(len(body))
 
 	log.Println("Start up the API")
-	server := server.New(database, ai)
+	server := server.New(metrics, database, ai)
 	server.Use(router)
 	log.Fatal(router.Run("0.0.0.0:8080"))
 }
