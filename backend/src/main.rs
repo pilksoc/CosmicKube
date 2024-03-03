@@ -30,7 +30,7 @@ async fn main() {
 
     let routes = ws_route.with(warp::cors().allow_any_origin());
     println!("starting server"); //debug
-    warp::serve(routes).run(([127, 0, 0, 1], 8000)).await;
+    warp::serve(routes).run(([127, 0, 0, 1], 8000)).await; //PORT 8000 localhost
 }
 
 fn with_clients(clients: Clients) -> impl Filter<Extract = (Clients,), Error = Infallible> + Clone {
