@@ -24,7 +24,7 @@ func SortKubesUuid(kube1, kube2 *uuid.UUID) {
 type Kube struct {
 	Name  string    `gorm:"unique;not null" json:"name"`
 	Id    uuid.UUID `gorm:"primaryKey" json:"id"`
-	Image []byte    `gorm:"not null" json:"image"`
+	Image []byte    `gorm:"not null" json:"-"`
 }
 
 type KubeRecipe struct {
@@ -65,6 +65,12 @@ func New(ai *aiStuff.KubeAi, url string) *Database {
 
 	log.Println("Migrated database successfully")
 	return database
+}
+
+func (db *Database) GetKubeImage(id string) ([]byte, error) {
+	var kube Kube
+	result := db.Db.First(&kube, "id = ?", id)
+	return kube.Image, result.Error
 }
 
 func (db *Database) GetKube(id string) (Kube, error) {

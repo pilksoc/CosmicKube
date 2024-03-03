@@ -46,12 +46,12 @@ func ResizeImage(img []byte) ([]byte, error) {
 	}
 
 	outputFile.Seek(0, 0)
-  newImageByes, err := io.ReadAll(outputFile)
-  if err != nil {
-    log.Printf("Error reading resized image: %s", err)
-    return nil, err
-  }
+	newImageByes, err := io.ReadAll(outputFile)
+	if err != nil {
+		log.Printf("Error reading resized image: %s", err)
+		return nil, err
+	}
 
-  log.Printf("Resized image size: %d", len(newImageByes))
-  return newImageByes, nil
+	log.Printf("Resized image size: %d", len(newImageByes))
+	return newImageByes, nil
 }
