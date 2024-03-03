@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"os"
-  "strings"
+	"strings"
 
 	"github.com/CosmicKube/kube_cache/aiStuff"
 	"github.com/CosmicKube/kube_cache/model"
@@ -23,13 +23,13 @@ func main() {
 		log.Println(err)
 	}
 
-	log.Println("Using configuration for database...")
-	database := model.New(os.Getenv("DATABASE_URL"))
-
 	log.Println("Creating AI client...")
 	ai := aiStuff.New(os.Getenv("OPENAI_ENDPOINT"),
 		os.Getenv("OPENAI_API_KEY"),
 		os.Getenv("OPENAI_MODEL_ID"))
+
+	log.Println("Using configuration for database...")
+	database := model.New(ai, os.Getenv("DATABASE_URL"))
 
 	log.Println("Starting server...")
 	router := gin.Default()
@@ -60,6 +60,13 @@ func main() {
 			return true
 		},
 	}))
+
+	body, err := ai.GenerateDalleForKube("Nuclear plant")
+	if err != nil {
+		log.Fatalf("SHIT IS FUCKED %s", err)
+	}
+	log.Println("HERE IS THE DATA YOU WANT AND SHIT")
+	log.Println(len(body))
 
 	log.Println("Start up the API")
 	server := server.New(database, ai)

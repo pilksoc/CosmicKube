@@ -79,7 +79,7 @@ type aiReq struct {
 }
 
 func (ai *KubeAi) GenerateKubeRecipe(kubeName1, kubeName2 string) (string, error) {
-	url := fmt.Sprintf("%s/openai/deployments/%s/chat/completions?api-version=2024-02-15-preview", ai.Endpoint, ai.ModelId)
+	url := fmt.Sprintf("%s/openai/deployments/Dalle3/images/generations?api-version=2024-02-15-preview", ai.Endpoint)
 
 	postReq := aiReq{
 		Messages: []aiMessage{

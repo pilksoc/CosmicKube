@@ -18,28 +18,41 @@ func New(database *model.Database, ai *aiStuff.KubeAi) *Server {
 }
 
 func (s *Server) Use(engine *gin.Engine) {
-  engine.GET("/kubes", s.GetAllKubes)
-  engine.GET("/kubeRecipes", s.GetAllKubeRecipes)
+	engine.GET("/", s.Index)
+	engine.GET("/kubes", s.GetAllKubes)
+	engine.GET("/kubeRecipes", s.GetAllKubeRecipes)
 	engine.GET("/kubeById/:id", s.GetKube)
+	engine.GET("/kubeImageById/:id", s.GetKubeImage)
 	engine.GET("/kubeRecipeByIds/:id1/:id2", s.GetKubeRecipe)
 }
 
 func (s *Server) GetAllKubeRecipes(c *gin.Context) {
-  recipes, err := s.Database.GetAllKubeRecipes()
-  if err != nil {
-    c.JSON(500, gin.H{"error": err.Error()})
-    return
-  }
-  c.JSON(200, recipes)
+	recipes, err := s.Database.GetAllKubeRecipes()
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, recipes)
+}
+
+func (s *Server) GetKubeImage(c *gin.Context) {
+	id := c.Param("id")
+	image, err := s.Database.GetKubeImage(id)
+	if err != nil {
+		log.Printf("Cannot get kube image: %s", err)
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.Data(200, "image/png", image)
 }
 
 func (s *Server) GetAllKubes(c *gin.Context) {
-  kubes, err := s.Database.GetAllKubes()
-  if err != nil {
-    c.JSON(500, gin.H{"error": err.Error()})
-    return
-  }
-  c.JSON(200, kubes)
+	kubes, err := s.Database.GetAllKubes()
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, kubes)
 }
 
 func (s *Server) GetKube(c *gin.Context) {
@@ -81,7 +94,14 @@ func (s *Server) GetKubeRecipe(c *gin.Context) {
 			return
 		}
 
-		err = s.Database.SetKubeRecipe(kube1, kube2, newKube)
+		image, err := s.Ai.GenerateDalleForKube(newKube)
+		if err != nil {
+			log.Printf("Error generating Dalle for kube: %s", err)
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+
+		err = s.Database.SetKubeRecipe(kube1, kube2, newKube, image)
 		if err != nil {
 			log.Printf("Cannot save kube recipe: %s", err)
 			c.JSON(500, gin.H{"error": err.Error()})
