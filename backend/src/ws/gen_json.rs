@@ -1,4 +1,3 @@
-use cosmic_kube::grid::Grid;
 use cosmic_kube::kube::Kube;
 use cosmic_kube::local_grid::LocalGrid;
 use cosmic_kube::player::Player;
@@ -9,6 +8,7 @@ use rand::Rng;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use serde_repr::{Deserialize_repr, Serialize_repr};
+use cosmic_kube::WORLD;
 
 //example valid json:
 // { "initialised": true, "player": "charlie zoot", "coordinates": [10, 10], "action": { "kind": 1, "kube": { "id": {"uuid": "f7993723-2529-50c4-950d-ba104d29b5df" }, "name": "dirt" }, "coordinates": [10,11] } }
@@ -46,7 +46,7 @@ pub struct Action {
     coordinates: Coordinate,
 }
 
-fn perform_action(mut grid: Grid, action: Action) -> Grid {
+fn perform_action(action: Action) {
     let kube_result: SpaceKind;
     match action.kind {
         ActionType::Pickup => kube_result = SpaceKind::EmptySpace,
@@ -54,8 +54,7 @@ fn perform_action(mut grid: Grid, action: Action) -> Grid {
     }
 
     let space_in_question: Space = Space::new(action.coordinates, kube_result);
-    grid.insert(space_in_question);
-    grid
+    WORLD.lock().unwrap().insert(space_in_question);
 }
 
 fn debug_message(state: &PlayerInfo) {
@@ -74,20 +73,16 @@ fn debug_message(state: &PlayerInfo) {
 fn recalculate_game(state: PlayerInfo) -> String {
     debug_message(&state); //debug
 
-    // total_grid: Grid = get grid from GO db
-    let example_grid: Grid = Grid::new(2048, 2048);
-    let new_grid_to_send: Grid;
-
     // then we want to update the grid by performing action
     match state.action {
-        Some(p) => new_grid_to_send = perform_action(example_grid, p),
-        _ => new_grid_to_send = example_grid,
+        Some(p) => perform_action(p),
+        _ => (),
     }
 
     //store new_grid_to_send in the database
 
     let new_grid: LocalGrid =
-        LocalGrid::from_grid_and_coord(&new_grid_to_send, state.coordinates, 48);
+        LocalGrid::from_grid_and_coord(&WORLD.lock().unwrap(), state.coordinates, 48);
     let resp: Value;
 
     if state.initialised {
