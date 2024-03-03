@@ -63,10 +63,10 @@ func (m *Metrics) IncrementGptErrors() {
 
 func (m *Metrics) String() string {
 	return fmt.Sprintf(`kube_cache_hits=%d
-  kube_cache_misses=%d
-  kube_images_retrieved=%d
-  kube_dalle_requests=%d
-  kube_gpt_requests=%d
-  kube_dalle_errors=%d
-  kube_gpt_errors=%d`, m.CacheHits, m.CacheMisses, m.ImagesRetrieved, m.DalleRequests, m.GptRequests, m.DalleErrors, m.GptErrors)
+kube_cache_misses=%d
+kube_images_retrieved=%d
+kube_dalle_requests=%d
+kube_gpt_requests=%d
+kube_dalle_errors=%d
+kube_gpt_errors=%d`, m.CacheHits, m.CacheMisses, m.ImagesRetrieved, m.DalleRequests, m.GptRequests, m.DalleErrors, m.GptErrors)
 }
