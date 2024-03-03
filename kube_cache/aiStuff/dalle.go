@@ -14,7 +14,7 @@ import (
 )
 
 func (ai *KubeAi) generateDallePrompt(kubeName string) string {
-	return fmt.Sprint("A flat tillable square texture that represents %s in pixel art for a video game, covers the full image", kubeName)
+	return fmt.Sprintf("A flat tillable square texture that represents %s in pixel art for a video game, covers the full image", kubeName)
 }
 
 const (
