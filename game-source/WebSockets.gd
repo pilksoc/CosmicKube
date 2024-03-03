@@ -1,6 +1,7 @@
 extends Node
 class_name WebSocketClient
 
+@export var base_url: String = "ws://localhost:8000/ws"
 @export var handshake_headers : PackedStringArray
 @export var supported_protocols : PackedStringArray
 @export var tls_trusted_certificate : X509Certificate
@@ -29,7 +30,7 @@ func connect_to_url(url) -> int:
 
 
 func send(message) -> int:
-	print(socket.get_ready_state())
+	print("Yooo " + str(socket.get_ready_state()))
 	if typeof(message) == TYPE_STRING:
 		return socket.send_text(message)
 	return socket.send(var_to_bytes(message))
@@ -45,6 +46,7 @@ func get_message() -> Variant:
 
 
 func close(code := 1000, reason := "") -> void:
+	print("Socket closed!")
 	socket.close(code, reason)
 	last_state = socket.get_ready_state()
 
@@ -70,10 +72,6 @@ func poll() -> void:
 			connection_closed.emit()
 	while socket.get_ready_state() == socket.STATE_OPEN and socket.get_available_packet_count():
 		message_received.emit(get_message())
-
-
-func _ready():
-	connect_to_url("ws://localhost:8000/ws")
-
+	
 func _process(delta):
 	poll()
