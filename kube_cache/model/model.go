@@ -56,3 +56,19 @@ func (db *Database) GetKube(id string) (Kube, error) {
 	result := db.Db.First(&kube, "id = ?", id)
 	return kube, result.Error
 }
+
+func (db *Database) SetKube(kube Kube) error {
+	result := db.Db.Create(&kube)
+	return result.Error
+}
+
+func (db *Database) GetKubeRecipe(id string) (KubeRecipe, error) {
+	var recipe KubeRecipe
+	result := db.Db.Preload("OutputKube").Preload("Ingredients.Kube").First(&recipe, "id = ?", id)
+	return recipe, result.Error
+}
+
+func (db *Database) SetKubeRecipe(recipe KubeRecipe) error {
+	result := db.Db.Create(&recipe)
+	return result.Error
+}
