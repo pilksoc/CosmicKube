@@ -75,6 +75,6 @@ func (s *Server) GetKubeRecipe(c *gin.Context) {
 			return
 		}
 	}
-  c.Header("Cache-Control", cacheControlHeader)
+	c.Header("Cache-Control", cacheControlHeader)
 	c.JSON(200, recipe)
 }

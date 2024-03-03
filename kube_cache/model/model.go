@@ -9,7 +9,7 @@ import (
 )
 
 type Kube struct {
-	Name string    `json:"name"`
+	Name string    `gorm:"unique" json:"name"`
 	Id   uuid.UUID `gorm:"primaryKey" json:"id"`
 	// Image []byte    `json:"image"`
 }
@@ -51,8 +51,12 @@ func New(url string) *Database {
 		log.Fatal(err)
 	}
 
+	database := &Database{Db: db}
+	log.Println("Seeding database...")
+	database.seed()
+
 	log.Println("Migrated database successfully")
-	return &Database{Db: db}
+	return database
 }
 
 func (db *Database) GetKube(id string) (Kube, error) {
@@ -68,33 +72,33 @@ func (db *Database) GetKubeRecipe(kube1, kube2 string) (KubeRecipe, error) {
 }
 
 func (db *Database) SetKubeRecipe(kube1, kube2 Kube, newKube string) error {
-  log.Printf("Setting kube recipe: %s + %s = %s", kube1.Name, kube2.Name, newKube)
-  err := db.Db.Transaction(func(tx *gorm.DB) error {
-    newKubeObject := Kube{Name: newKube, Id: uuid.New()}
-    err := tx.Create(&newKubeObject).Error
-    if err != nil {
-      log.Printf("Cannot create new kube: %s", err)
-      return err
-    }
+	log.Printf("Setting kube recipe: %s + %s = %s", kube1.Name, kube2.Name, newKube)
+	err := db.Db.Transaction(func(tx *gorm.DB) error {
+		newKubeObject := Kube{Name: newKube, Id: uuid.New()}
+		err := tx.Create(&newKubeObject).Error
+		if err != nil {
+			log.Printf("Cannot create new kube: %s", err)
+			return err
+		}
 
-    recipe := KubeRecipe{
-      Id:     uuid.New(),
-      Output: newKubeObject.Id,
-      Kube1:  &kube1,
-      Kube2:  &kube2,
-    }
-    err = tx.Create(&recipe).Error
-    if err != nil {
-      log.Printf("Cannot create new kube recipe: %s", err)
-      return err
-    }
-    tx.Commit()
-    return nil
-  })
+		recipe := KubeRecipe{
+			Id:     uuid.New(),
+			Output: newKubeObject.Id,
+			Kube1:  &kube1,
+			Kube2:  &kube2,
+		}
+		err = tx.Create(&recipe).Error
+		if err != nil {
+			log.Printf("Cannot create new kube recipe: %s", err)
+			return err
+		}
+		tx.Commit()
+		return nil
+	})
 
-  if err != nil {
-    log.Print("Saving the kube recipe failed")
-    return err
-  }
-  return nil
+	if err != nil {
+		log.Print("Saving the kube recipe failed")
+		return err
+	}
+	return nil
 }
