@@ -4,7 +4,8 @@ extends CharacterBody2D
 @export var is_moving: bool = false
 
 @onready var wsClient: WebSocketClient = get_tree().current_scene.find_child('WebSocketClient')
-@onready var container: VBoxContainer = get_tree().current_scene.find_child('CanvasLayer').find_child('ScrollContainer').find_child('VBoxContainer')
+@onready var container: VBoxContainer = get_tree().current_scene.find_child('CanvasLayer').find_child('SpawnListScroll').find_child('SpawnListContainer')
+@onready var inventoryContainer: VBoxContainer = get_tree().current_scene.find_child('CanvasLayer').find_child('Inventory').find_child('InventoryList')
 @onready var uuid_util = preload('res://uuid.gd')
 
 var inputs = {
@@ -22,6 +23,8 @@ var inputs_rev = {
 }
 
 var inventory = {}
+
+var selectedItem = ""
 
 const spawnList = {
 	"hydrogen": "5652c78a-8bfe-452a-ac29-53746cabfa40",
@@ -64,10 +67,25 @@ func _ready():
 
 func spawnButtonPress(uuid):
 	print("added " + uuid)
+	
+	for n in inventoryContainer.get_children():
+		n.remove_child(n)
+		n.queue_free()
+	
 	if uuid in inventory:
 		inventory[uuid] += 1
 	else:
 		inventory[uuid] = 1
+	
+	for k in inventory.keys():
+		var lab = Button.new()
+		lab.text = spawnList.find_key(k) + " x" + str(inventory[k])
+		lab.connect("pressed", itemSelectButton.bind(k))
+		inventoryContainer.add_child(lab)
+
+func itemSelectButton(uuid):
+	selectedItem = uuid
+	print("New selected Item ", selectedItem)
 
 func _input(event):
 	var vec = Input.get_vector("left", "right", "up", "down")
