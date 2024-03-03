@@ -21,34 +21,65 @@ pub enum RestError {
     SerdeError(#[from] serde_json::Error),
 }
 
+/// A client which interacts with the cache server.
 #[derive(Debug)]
 pub struct CacheClient {
+    /// The endpoint URL.
     url: Url,
 }
 impl CacheClient {
+    /// Create a new client using an environment variable.
+    /// 
+    /// # Errors
+    /// Will error when the environment variable isn't defined correctly, or if the URL couldn't be parsed.
     pub fn new() -> Result<CacheClient, EnvVarParseError> {
         let url_string = std::env::var("ENDPOINT")?;
         Ok(CacheClient {
             url: Url::parse(&url_string)?,
         })
     }
+    /// Create a new client using a given endpoint URL.
+    /// 
+    /// # Errors
+    /// 
+    /// Will error if the URL couldn't be parsed.
     pub fn from_url(url: &str) -> Result<CacheClient, url::ParseError> {
         Ok(CacheClient {
             url: Url::parse(url)?,
         })
     }
+    /// Gets all the Kubes from the cache server.
+    /// 
+    /// # Errors
+    /// 
+    /// If the REST server connection fails, or if the output is an error (like 404), then this will return an Err.
     pub async fn get_kubes(&self) -> Result<Vec<Kube>, RestError> {
         let res = reqwest::get(self.url.join("kubes").unwrap()).await?.text().await?;
         Ok(serde_json::from_str(&res)?)
     }
+    /// Gets all the recipes from the cache server.
+    /// 
+    /// # Errors
+    /// 
+    /// If the REST server connection fails, or if the output is an error (like 404), then this will return an Err.
     pub async fn get_recipes(&self) -> Result<Vec<Recipe>, RestError> {
         let res = reqwest::get(self.url.join("kubeRecipes").unwrap()).await?.text().await?;
         Ok(serde_json::from_str(&res)?)
     }
+    /// Gets a Kube by its ID from the cache server.
+    /// 
+    /// # Errors
+    /// 
+    /// If the REST server connection fails, or if the output is an error (like 404), then this will return an Err.
     pub async fn get_kube_by_id(&self, id: Uuid) -> Result<Kube, RestError> {
         let res = reqwest::get(self.url.join(format!("kubeById/{}", id).as_str()).unwrap()).await?.text().await?;
         Ok(serde_json::from_str(&res)?)
     }
+    /// Gets a recipe by its ID from the cache server.
+    /// 
+    /// # Errors
+    /// 
+    /// If the REST server connection fails, or if the output is an error (like 404), then this will return an Err.
     pub async fn get_recipe_by_id(&self, id1: Uuid, id2: Uuid) -> Result<Recipe, RestError> {
         let res = reqwest::get(self.url.join(format!("kubeRecipeByIds/{}/{}", id1, id2).as_str()).unwrap()).await?.text().await?;
         Ok(serde_json::from_str(&res)?)
