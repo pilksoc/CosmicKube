@@ -46,7 +46,7 @@ jobs:
               uses: docker/build-push-action@v3
               with:
                 context: .
-                file: cache.Dockerfile
+                file: kube_cache/cache.Dockerfile
                 push: true
                 tags: |
                     ghcr.io/pilksoc/kubecache:latest

@@ -48,7 +48,7 @@ jobs:
               uses: docker/build-push-action@v3
               with:
                 context: .
-                file: server.Dockerfile
+                file: backend/server.Dockerfile
                 push: true
                 tags: |
                     ghcr.io/pilksoc/cosmickube:dev-latest
