@@ -1,6 +1,6 @@
-FROM alpine:3.19.1
+FROM debian:12.5-slim
 
-RUN apk update && apk add ca-certificates && apk cache clean
+RUN apt update && apt install ca-certificates && apt upgrade -y
 WORKDIR /usr/local/cosmic_kube
 COPY backend/target/release/cosmic_kube_amd64 /usr/local/bin/cosmic_kube
 
