@@ -13,6 +13,9 @@ impl LocalGrid {
         for space in grid.get_neighbours_n_away(coordinate, local_size) {
             spaces.push(space.clone())
         }
+        if let Some(current_space_ref) = grid.get_space(coordinate) {
+            spaces.push(current_space_ref.clone());
+        }
         LocalGrid { spaces }
     }
 }
