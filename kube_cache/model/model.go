@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/CosmicKube/kube_cache/aiStuff"
+	"github.com/CosmicKube/kube_cache/metrics"
 	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -40,10 +41,11 @@ type KubeRecipe struct {
 }
 
 type Database struct {
-	Db *gorm.DB
+	Db      *gorm.DB
+	Metrics *metrics.Metrics
 }
 
-func New(ai *aiStuff.KubeAi, url string) *Database {
+func New(metrics *metrics.Metrics, ai *aiStuff.KubeAi, url string) *Database {
 	log.Println("Connecting to database...")
 	db, err := gorm.Open(postgres.Open(url), &gorm.Config{
 		PrepareStmt: true,
@@ -59,7 +61,7 @@ func New(ai *aiStuff.KubeAi, url string) *Database {
 		log.Fatal(err)
 	}
 
-	database := &Database{Db: db}
+	database := &Database{Db: db, Metrics: metrics}
 	log.Println("Seeding database...")
 	database.seed(ai)
 
