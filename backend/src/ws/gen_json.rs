@@ -75,8 +75,7 @@ fn recalculate_game(state: PlayerInfo) -> String {
 
     // store the players location in the world
     let playerspace: Space = Space::new(state.coordinates, SpaceKind::Player(state.player));
-    let mut grid = WORLD.lock().unwrap();
-    grid.insert(playerspace);
+    WORLD.lock().unwrap().insert(playerspace);
 
     // then we want to update the grid by performing action
     match state.action {
@@ -104,9 +103,8 @@ fn recalculate_game(state: PlayerInfo) -> String {
 }
 
 pub fn create_response(message: &str) -> String {
-    // Parse the string of data into serde_json::Value.
-    let state: PlayerInfo =
-        serde_json::from_str(message).expect("something went wrong in json parse");
-
-    recalculate_game(state)
+    match serde_json::from_str::<PlayerInfo>(message) {
+        Ok(info) => recalculate_game(info),
+        Err(_) => "Ding Dong!!! your json is WRONG".to_string(),
+    }
 }
