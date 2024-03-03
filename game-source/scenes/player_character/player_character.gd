@@ -16,16 +16,12 @@ var inputs = {
 func _ready():
 	position = position.snapped(Vector2.ONE * tile_size)
 	position += Vector2.ONE * tile_size / 2
+	
 
 
 func _input(event):
-	if is_moving:
-		pass
-	for dir in inputs.keys():
-		if event.is_action_pressed(dir):
-			var tween = get_tree().create_tween()
-			tween.tween_property(self, "position", position + (inputs[dir] * tile_size), 1.0/animation_speed).set_trans(Tween.TRANS_SINE)
-			is_moving = true
-			await tween.finished
-			is_moving = false
+	var vec = Input.get_vector("left","right","up","down")
+	 
+	if !is_moving and vec.length()==1:
+		position += vec*100
 	
