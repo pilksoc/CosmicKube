@@ -3,6 +3,10 @@ use crate::space::Space;
 use crate::Coordinate;
 use thiserror::Error;
 
+fn distance([a, b]: Coordinate, [x, y]: Coordinate) -> u64 {
+    (a.abs_diff(x)).max(b.abs_diff(y))
+}
+
 /// The direction in which to grow. For example, going from 3 to 9 would give a `GrowDirection::Expand`.
 enum GrowDirection {
     Shrink,
@@ -77,6 +81,32 @@ impl Grid {
     /// ```
     pub fn get_space(&self, coordinate: Coordinate) -> Option<&Space> {
         self.spaces.get(&coordinate)
+    }
+
+    pub fn get_neighbours_n_away(&self, coordinate: Coordinate, n: u64) -> Vec<&Space> {
+        let mut coords: Vec<Coordinate> = Vec::new();
+        let mut stack: Vec<Coordinate> = self.neighbour_coords_in_bounds(coordinate);
+        while let Some(coord) = stack.pop() {
+            if coords.contains(&coord) {
+                continue;
+            }
+            coords.push(coord);
+            stack.extend(
+            self.neighbour_coords_in_bounds(coord)
+                .iter()
+                .filter(|c|
+                    distance(coordinate, **c) <= n && distance(coordinate, **c) > distance(coord, **c)
+                )
+            )
+        }
+        let mut to_return: Vec<&Space> = Vec::new();
+        for coord in coords {
+            match self.spaces.get(&coord) {
+                Some(space) => to_return.push(space),
+                None => (),
+            }
+        }
+        to_return
     }
 
     fn neighbour_coords_in_bounds(&self, coordinate: Coordinate) -> Vec<Coordinate> {
@@ -261,5 +291,15 @@ mod tests {
         assert!(shrink_res.is_err());
         let expand_res = grid.expand_grid(u64::MAX - 1);
         assert!(expand_res.is_err());
+    }
+
+    #[test]
+    fn find_neighbours_2_away() {
+        let grid = grid_3x3();
+        let neighbours_2_away = grid.get_neighbours_n_away([1, 1], 2).sort();
+        assert_eq!(
+            grid.spaces.values().collect::<Vec<&Space>>().sort(),
+            neighbours_2_away,
+        )
     }
 }
