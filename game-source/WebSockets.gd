@@ -73,7 +73,7 @@ func poll() -> void:
 
 
 func _ready():
-	connect_to_url("ws://localhost:8000/ws")
+	connect_to_url("wss://hack.djpiper28.co.uk/ws/")
 
 func _process(delta):
 	poll()

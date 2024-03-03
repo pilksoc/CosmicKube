@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://2t2nbl4hrw8b"]
+[gd_scene load_steps=4 format=3 uid="uid://2t2nbl4hrw8b"]
 
 [ext_resource type="PackedScene" uid="uid://xqoiyxrn10js" path="res://scenes/player_character/player_character.tscn" id="1_1c02b"]
 [ext_resource type="Script" path="res://scenes/main/main.gd" id="1_47q2m"]
+[ext_resource type="Script" path="res://WebSockets.gd" id="3_uxet7"]
 
 [node name="GameLevel" type="Node2D"]
 script = ExtResource("1_47q2m")
@@ -9,3 +10,6 @@ script = ExtResource("1_47q2m")
 [node name="PlayerCharacter" parent="." instance=ExtResource("1_1c02b")]
 position = Vector2(577, 325)
 scale = Vector2(2.9, 2.9)
+
+[node name="WebSocketClient" type="Node" parent="."]
+script = ExtResource("3_uxet7")
