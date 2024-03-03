@@ -1,14 +1,10 @@
 extends Node2D
-@export var on = true
 @export var tile_size = 100 
 
 func _process(delta):
 	queue_redraw()
 
 func _draw():
-	if !on:
-		pass
-	
 	var camera: CharacterBody2D = get_tree().current_scene.find_child('PlayerCharacter')
 
 	var size = get_viewport_rect().size / 2
