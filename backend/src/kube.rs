@@ -13,7 +13,7 @@ impl Kube {
         let mut name_uuid = name.clone();
         name_uuid.push_str("kube");
         Kube {
-            id: Uuid::new_v5(&Uuid::NAMESPACE_DNS, name_uuid.as_bytes()),
+            id: Uuid::new_v4(),
             name,
         }
     }
