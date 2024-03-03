@@ -147,10 +147,10 @@ func _input(event):
 				selectedItem = { }
 			else:
 				inventory[selectedItem.id].amount -= 1
+			redrawInventory()
 			
 			var ser_res = JSON.parse_string(await wsClient.message_received)
 			print("Response from move: " + JSON.stringify(ser_res))
-			redrawInventory()
 			
 
 	if vec.length() == 1:
@@ -178,13 +178,13 @@ func _on_player_did_move(new_pos):
 	for i in ser_res["grid"]["spaces"]:
 		if i["contains"].has("Player"):
 			var obj = PlayerObject.instantiate()
-			obj.transform.origin = Vector2(i["contains"]["coordinate"][0], i["contains"]["coordinate"][1])
+			obj.transform.origin = Vector2(i["coordinate"][0], i["coordinate"][1])
 			OtherObjects.add_child(obj)
 			pass
 		elif i["contains"].has("Kube"):
 			var obj = BoxObject.instance()
 			obj.transform.origin = Vector2(i["contains"]["coordinate"][0], i["contains"]["coordinate"][1])
-			obj.fetch_url = "https://hack.djpiper28.co.uk/cache/kubeImageById/" + i["contains"]["Kube"]["uuid"]
+			obj.fetch_url = "https://hack.djpiper28.co.uk/cache/kubeImageById/" + i["contains"]["Kube"]["id"]
 			OtherObjects.add_child(obj)
 			pass
 	
