@@ -73,13 +73,16 @@ fn debug_message(state: &PlayerInfo) {
 fn recalculate_game(state: PlayerInfo) -> String {
     debug_message(&state); //debug
 
+    // store the players location in the world
+    let playerspace: Space = Space::new(state.coordinates, SpaceKind::Player(state.player));
+    let mut grid = WORLD.lock().unwrap();
+    grid.insert(playerspace);
+
     // then we want to update the grid by performing action
     match state.action {
         Some(p) => perform_action(p),
         _ => (),
     }
-
-    //store new_grid_to_send in the database
 
     let new_grid: LocalGrid =
         LocalGrid::from_grid_and_coord(&WORLD.lock().unwrap(), state.coordinates, 48);
