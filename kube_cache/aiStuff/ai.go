@@ -87,10 +87,10 @@ func (ai *KubeAi) GenerateKubeRecipe(kubeName1, kubeName2 string) (string, error
 				Role:    "system",
 				Content: baseRequest,
 			},
-      {
-        Role: "user",
-        Content: ai.generateAiPrompt(kubeName1, kubeName2),
-      },
+			{
+				Role:    "user",
+				Content: ai.generateAiPrompt(kubeName1, kubeName2),
+			},
 		},
 		MaxTokens:        maxTokens,
 		Temperature:      temperature,
@@ -125,16 +125,16 @@ func (ai *KubeAi) GenerateKubeRecipe(kubeName1, kubeName2 string) (string, error
 		return "", err
 	}
 
-	var aiResponse openaiResp 
+	var aiResponse openaiResp
 	err = json.Unmarshal([]byte(body), &aiResponse)
 	if err != nil {
 		log.Printf("The silly server sent %s, this is very bad %s", body, err)
 		return string(body), nil
 	}
 
-  actualLegitMessage := aiResponse.Choices[0].Message.Content
+	actualLegitMessage := aiResponse.Choices[0].Message.Content
 
-  var aiResp2 aiResp
+	var aiResp2 aiResp
 	err = json.Unmarshal([]byte(actualLegitMessage), &aiResp2)
 	if err != nil {
 		log.Printf("The silly ai sent %s, this is very bad %s", actualLegitMessage, err)
