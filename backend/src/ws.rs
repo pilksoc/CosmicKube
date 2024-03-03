@@ -1,9 +1,10 @@
-use crate::{Client, Clients};
+use crate::{ws::gen_json::create_response, Client, Clients};
 use futures::{FutureExt, StreamExt};
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 use uuid::Uuid;
 use warp::ws::{Message, WebSocket};
+mod gen_json;
 
 pub async fn client_connection(ws: WebSocket, clients: Clients) {
     println!("establishing client connection... {:?}", ws); //debug
@@ -26,7 +27,8 @@ pub async fn client_connection(ws: WebSocket, clients: Clients) {
     }));
 
     // creating a new uuid to use as the key in the 'clients' hashmap, and a new instance of a 'client'
-    let uuid = Uuid::new_v4().simple().to_string();
+    // this might be clapped
+    let uuid = Uuid::new_v5(&Uuid::NAMESPACE_DNS, "client".as_bytes()).simple().to_string();
 
     let new_client = Client {
         client_id: uuid.clone(),
@@ -54,7 +56,7 @@ pub async fn client_connection(ws: WebSocket, clients: Clients) {
     println!("{} disconnected", uuid); //debug
 }
 
-// example function to respond to a clients message, this just responds to 'ping!' with 'pong!', but later we will replace this with;
+
 // ->recieve client game info <- send back client game state
 // wwwwwwwwwwwwwwwwwwwww i am so tired 
 async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
@@ -65,17 +67,16 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
         Err(_) => return,
     };
 
-    if message == "ping" || message == "ping\n" {
-        let locked = clients.lock().await;
-        match locked.get(client_id) {
-            Some(v) => {
-                if let Some(sender) = &v.sender {
-                    println!("sending pong");
-                    let _ = sender.send(Ok(Message::text("pong")));
-                }
+    println!("{}", message);
+
+    let locked = clients.lock().await;
+    match locked.get(client_id) {
+        Some(v) => {
+            if let Some(sender) = &v.sender {
+                let _ = sender.send(Ok(Message::text(create_response(message))));
             }
-            None => return,
         }
-        return;
-    };
+        None => return,
+    }
+    return;
 }

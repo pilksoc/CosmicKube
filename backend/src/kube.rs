@@ -1,6 +1,7 @@
 use uuid::Uuid;
+use serde::{Deserialize, Serialize};
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Serialize, Deserialize)]
 pub struct KubeId {
     uuid: Uuid,
 }
@@ -23,7 +24,7 @@ impl KubeId {
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct Kube {
     pub id: KubeId,
     pub name: String,
