@@ -81,7 +81,7 @@ script = ExtResource("1_lpra8")
 target_position = Vector2(0, 19)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(0.458, 0.368)
+scale = Vector2(1.245, 1)
 texture = ExtResource("2_ldfvl")
 hframes = 3
 vframes = 4

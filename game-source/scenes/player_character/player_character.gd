@@ -6,6 +6,7 @@ extends CharacterBody2D
 @onready var wsClient: WebSocketClient = get_tree().current_scene.find_child('WebSocketClient')
 @onready var container: VBoxContainer = get_tree().current_scene.find_child('CanvasLayer').find_child('SpawnListScroll').find_child('SpawnListContainer')
 @onready var inventoryContainer: VBoxContainer = get_tree().current_scene.find_child('CanvasLayer').find_child('Inventory').find_child('InventoryList')
+@onready var coordLabel: Label = get_tree().current_scene.find_child('CanvasLayer').find_child('Coord')
 
 @onready var OtherObjects: Node2D = get_tree().current_scene.find_child('OtherObjects')
 @onready var BoxObject = preload('res://scenes/box/box.tscn')
@@ -162,11 +163,13 @@ func _input(event):
 	
 
 func make_player_state(make_player_state:Vector2):
+	coordLabel.text = "X: " + str(make_player_state.x) + " Y: " + str(make_player_state.y)
 	return JSON.stringify({
 				"initialised": true,
 				"player": playerInfo,
 				"coordinates": [make_player_state.x, make_player_state.y]
 				})
+
 
 func _on_player_did_move(new_pos):
 	wsClient.send(make_player_state(new_pos))

@@ -138,4 +138,10 @@ offset_bottom = 60.0
 [node name="InventoryList" type="VBoxContainer" parent="CanvasLayer/Inventory"]
 layout_mode = 2
 
+[node name="Coord" type="Label" parent="CanvasLayer"]
+offset_left = 459.0
+offset_top = 280.0
+offset_right = 572.0
+offset_bottom = 321.0
+
 [connection signal="player_did_move" from="." to="." method="_on_player_did_move"]
