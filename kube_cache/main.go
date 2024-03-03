@@ -23,7 +23,7 @@ func main() {
 	}
 
 	log.Println("Using configuration for database...")
-  database := model.New(os.Getenv("DATABASE_URL"))
+	database := model.New(os.Getenv("DATABASE_URL"))
 
 	log.Println("Creating AI client...")
 	ai := aiStuff.New(os.Getenv("OPENAI_ENDPOINT"),
@@ -44,8 +44,8 @@ func main() {
 		},
 	}))
 
-  log.Println("Start up the API")
-  server := server.New(database, ai)
-  server.Use(router)
+	log.Println("Start up the API")
+	server := server.New(database, ai)
+	server.Use(router)
 	log.Fatal(router.Run("0.0.0.0:8080"))
 }
