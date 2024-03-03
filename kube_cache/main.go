@@ -25,11 +25,15 @@ func main() {
 	model.New(os.Getenv("DATABASE_URL"))
 
 	log.Println("Creating AI client...")
-  ai := aiStuff.New(os.Getenv("OPENAI_ENDPOINT"),
+	ai := aiStuff.New(os.Getenv("OPENAI_ENDPOINT"),
 		os.Getenv("OPENAI_API_KEY"),
 		os.Getenv("OPENAI_MODEL_ID"))
 
-    log.Print(ai.GenerateKubeRecipe("water", "laptop"))
+	data, err := ai.GenerateKubeRecipe("water", "laptop")
+	if err != nil {
+		log.Fatal(err)
+	}
+  log.Printf("Data: %s", data)
 
 	log.Println("Starting server...")
 	router := gin.Default()
