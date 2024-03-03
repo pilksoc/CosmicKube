@@ -9,6 +9,7 @@ pub mod player;
 pub mod local_grid;
 pub mod cache_client;
 pub mod recipe;
+pub mod vecmap;
 
 #[macro_use]
 extern crate lazy_static;

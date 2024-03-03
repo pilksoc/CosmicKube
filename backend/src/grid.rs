@@ -1,7 +1,9 @@
 use std::collections::BTreeMap;
-use crate::space::Space;
+use crate::space::{Space, SpaceKind};
+use crate::vecmap::VecMap;
 use crate::Coordinate;
 use thiserror::Error;
+use uuid::Uuid;
 
 fn distance([a, b]: Coordinate, [x, y]: Coordinate) -> u64 {
     (a.abs_diff(x)).max(b.abs_diff(y))
@@ -31,6 +33,7 @@ pub struct Grid {
     spaces: BTreeMap<Coordinate, Space>,
     width: u64,
     height: u64,
+    players: VecMap<Uuid, Coordinate>,
 }
 impl Grid {
     pub fn new(width: u64, height: u64) -> Grid {
@@ -38,28 +41,46 @@ impl Grid {
             spaces: BTreeMap::new(),
             width,
             height,
+            players: VecMap::new(),
         }
     }
     pub fn from_spaces(spaces: Vec<Space>, width: u64, height: u64) -> Grid {
         let mut space_tree: BTreeMap<Coordinate, Space> = BTreeMap::new();
+        let mut players: VecMap<Uuid, Coordinate> = VecMap::new();
         for space in spaces {
+            if let SpaceKind::Player(player) = &space.contains {
+                players.update(player.uuid, space.coordinate);
+            }
             space_tree.insert(space.coordinate, space);
         }
         Grid {
             spaces: space_tree,
             width,
             height,
+            players,
         }
 
     }
 
     /// Adds a new space to the grid. In the future, this may return an [`std::result::Result::Err`] if the space is of type [`crate::space::SpaceKind::EmptySpace`].
     pub fn insert(&mut self, space: Space) {
+        if let SpaceKind::Player(player) = &space.contains {
+            self.players.update(player.uuid, space.coordinate);
+        }
         self.spaces.insert(space.coordinate, space);
     }
     /// Removes the space at the given coordinate. If there is no recorded space there, then this returns [`std::option::Option::None`].
     pub fn remove(&mut self, coordinate: Coordinate) -> Option<Space> {
-        self.spaces.remove(&coordinate)
+        if let Some(space) = self.spaces.remove(&coordinate) {
+            if let SpaceKind::Player(player) = &space.contains {
+                let _ = self.players.remove(&player.uuid);
+            }
+            Some(space)
+        }
+        else {
+            None
+        }
+        
     }
     /// Checks that a coordinate is not beyond the bounds of the grid.
     pub fn in_bounds(&self, coordinate: [u64; 2]) -> bool {
