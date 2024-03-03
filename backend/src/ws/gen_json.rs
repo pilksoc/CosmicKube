@@ -20,6 +20,7 @@ pub struct PlayerInfo {
     initialised: bool,
     player: Player,         //Player, //the player requesting the data
     coordinates: [u64; 2],  //current player coordinates
+    old_coordinates: Option<[u64; 2]>, //where the player was previously
     action: Option<Action>, // 0, block picked up 1, block placed
 }
 
@@ -72,6 +73,12 @@ fn debug_message(state: &PlayerInfo) {
 
 fn recalculate_game(state: PlayerInfo) -> String {
     debug_message(&state); //debug
+
+    //remove the players old location in the world, if provided
+    match &state.old_coordinates {
+        Some(c) => WORLD.lock().unwrap().insert(Space::new(*c, SpaceKind::EmptySpace)),
+        _ => (),
+    }
 
     // store the players location in the world
     let playerspace: Space = Space::new(state.coordinates, SpaceKind::Player(state.player));
