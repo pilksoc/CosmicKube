@@ -5,6 +5,7 @@ fetch(kubes)
   .then(async (data) => {
     for (let i = 0; i < data.length; i++) {
       for (let j = 0; j < i; j++) {
+        await new Promise((resolve) => setTimeout(resolve, 10000));
         const url =
           "https://hack.djpiper28.co.uk/cache/kubeRecipeByIds/" +
           data[i].id +
