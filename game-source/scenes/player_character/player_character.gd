@@ -114,9 +114,10 @@ func _input(event):
 	
 	var vec = Input.get_vector("left", "right", "up", "down")
 
+	print(inventory[selectedItem.id])
 	if event.is_action("Use"):
 		print("gdhlgjhs")
-		if inventory[selectedItem.id].amount > 0:
+		if inventory[selectedItem.id].amount > 0 and !selectedItem.has("id"):
 			wsClient.send(JSON.stringify(
 			{
 				"initialised": true,
@@ -136,9 +137,10 @@ func _input(event):
 			var ser_res = JSON.parse_string(await wsClient.message_received)
 			print("Response from move: " + JSON.stringify(ser_res))
 			
+			print(selectedItem)
 			if inventory[selectedItem.id].amount - 1 <= 0:
 				inventory.erase(selectedItem.id)
-				selectedItem = {}
+				selectedItem = { }
 			else:
 				inventory[selectedItem.id].amount -= 1
 			redrawInventory()
