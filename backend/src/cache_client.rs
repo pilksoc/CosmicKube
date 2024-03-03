@@ -5,18 +5,24 @@ use reqwest::Url;
 use uuid::Uuid;
 
 #[derive(Debug, Error)]
+/// Errors while parsing the environment variable for the endpoint URL.
 pub enum EnvVarParseError {
     #[error("Error while getting environment variable. Have you included an equals sign?")]
+    /// Used when the environment variable hasn't been set properly (such as a missing equals sign).
     EnvironmentError(#[from] std::env::VarError),
     #[error("Failed to parse URL, is it valid?")]
+    /// Used when the URL can't be parsed, usually meaning that it's not been written correctly.
     UrlParseError(#[from] url::ParseError)
 }
 
 #[derive(Debug, Error)]
+/// Errors while communicating with the REST cache server.
 pub enum RestError {
     #[error("Error while trying to reach REST server.")]
+    /// Failed to establish connection to the REST server, or got another error (e.g. 404).
     ReqwestError(#[from] reqwest::Error),
     #[error("Could not parse JSON.")]
+    /// Couldn't parse the JSON, usually because something else went wrong when trying to establish a connection to the server.
     SerdeError(#[from] serde_json::Error),
 }
 
