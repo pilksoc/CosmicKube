@@ -4,20 +4,24 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/CosmicKube/kube_cache/metrics"
 	"io"
 	"log"
 	"net/http"
+	"sync"
 	"time"
+
+	"github.com/CosmicKube/kube_cache/metrics"
 )
 
 type KubeAi struct {
 	Endpoint, Apikey, ModelId string
 	Metrics                   *metrics.Metrics
 	LastAccess                time.Time
+	// Apparently you are only allowed to make one request at a time
+	Lock sync.Mutex
 }
 
-const apiRestTime = time.Second * 5
+const apiRestTime = time.Second * 7
 
 func New(metrics *metrics.Metrics, endpoint, apiKey, modelId string) *KubeAi {
 	return &KubeAi{
@@ -163,10 +167,16 @@ func (ai *KubeAi) generateKubeRecipe(kubeName1, kubeName2 string) (string, error
 }
 
 func (ai *KubeAi) GenerateKubeRecipe(kubeName1, kubeName2 string) (string, error) {
-	if time.Since(ai.LastAccess) < apiRestTime {
+	for {
+		ai.Lock.Lock()
+		if time.Since(ai.LastAccess) > apiRestTime {
+			ai.LastAccess = time.Now()
+			ai.Lock.Unlock()
+			break
+		}
+		ai.Lock.Unlock()
 		time.Sleep(apiRestTime - time.Since(ai.LastAccess))
 	}
-	ai.LastAccess = time.Now()
 
 	res, err := ai.generateKubeRecipe(kubeName1, kubeName2)
 	if err != nil {
