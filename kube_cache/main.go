@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"os"
-  "strings"
+	"strings"
 
 	"github.com/CosmicKube/kube_cache/aiStuff"
 	"github.com/CosmicKube/kube_cache/model"

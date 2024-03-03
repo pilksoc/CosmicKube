@@ -18,28 +18,28 @@ func New(database *model.Database, ai *aiStuff.KubeAi) *Server {
 }
 
 func (s *Server) Use(engine *gin.Engine) {
-  engine.GET("/kubes", s.GetAllKubes)
-  engine.GET("/kubeRecipes", s.GetAllKubeRecipes)
+	engine.GET("/kubes", s.GetAllKubes)
+	engine.GET("/kubeRecipes", s.GetAllKubeRecipes)
 	engine.GET("/kubeById/:id", s.GetKube)
 	engine.GET("/kubeRecipeByIds/:id1/:id2", s.GetKubeRecipe)
 }
 
 func (s *Server) GetAllKubeRecipes(c *gin.Context) {
-  recipes, err := s.Database.GetAllKubeRecipes()
-  if err != nil {
-    c.JSON(500, gin.H{"error": err.Error()})
-    return
-  }
-  c.JSON(200, recipes)
+	recipes, err := s.Database.GetAllKubeRecipes()
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, recipes)
 }
 
 func (s *Server) GetAllKubes(c *gin.Context) {
-  kubes, err := s.Database.GetAllKubes()
-  if err != nil {
-    c.JSON(500, gin.H{"error": err.Error()})
-    return
-  }
-  c.JSON(200, kubes)
+	kubes, err := s.Database.GetAllKubes()
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, kubes)
 }
 
 func (s *Server) GetKube(c *gin.Context) {

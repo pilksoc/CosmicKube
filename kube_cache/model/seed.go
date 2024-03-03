@@ -99,7 +99,7 @@ func (d *Database) seed() {
 	}).Error
 
 	if err != nil {
-		log.Printf("Seeding database failed: %s", err)
+		log.Printf("Seeding database failed: %s", err())
 	}
 
 	var kubes, recipes int64
