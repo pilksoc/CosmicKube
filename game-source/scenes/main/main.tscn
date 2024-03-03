@@ -10,8 +10,6 @@ script = ExtResource("1_47q2m")
 [node name="PlayerCharacter" parent="." instance=ExtResource("1_1c02b")]
 position = Vector2(577, 325)
 scale = Vector2(2.9, 2.9)
-tile_size = 100.0
-is_moving = false
 
 [node name="WebSocketClient" type="Node" parent="."]
 script = ExtResource("3_uxet7")
