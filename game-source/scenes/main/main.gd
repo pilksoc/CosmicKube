@@ -9,9 +9,9 @@ func _draw():
 	if !on:
 		pass
 	
-	var camera: Camera2D = get_tree().current_scene.find_child('PlayerCharacter').find_child('Camera2D')
+	var camera: CharacterBody2D = get_tree().current_scene.find_child('PlayerCharacter')
 
-	var size = get_viewport_rect().size  * camera.zoom / 2
+	var size = get_viewport_rect().size / 2
 	var cam = camera.position
 	
 	for i in range(int((cam.x - size.x) / tile_size) - 1, int((size.x + cam.x) / tile_size) + 1):
