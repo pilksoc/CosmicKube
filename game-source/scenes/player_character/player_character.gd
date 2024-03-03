@@ -6,6 +6,9 @@ extends CharacterBody2D
 @onready var wsClient: WebSocketClient = get_tree().current_scene.find_child('WebSocketClient')
 @onready var container: VBoxContainer = get_tree().current_scene.find_child('CanvasLayer').find_child('SpawnListScroll').find_child('SpawnListContainer')
 @onready var inventoryContainer: VBoxContainer = get_tree().current_scene.find_child('CanvasLayer').find_child('Inventory').find_child('InventoryList')
+
+@onready var OtherObjects: Node2D = get_tree().current_scene.find_child('OtherObjects')
+
 @onready var uuid_util = preload('res://uuid.gd')
 signal player_did_move(new_pos: Vector2)
 
@@ -49,10 +52,12 @@ const spawnList = {
 }
 
 func _ready():
+
 	playerInfo = {
-		"name": "Player-" + uuid_util.v4(),
+		"username": "Player-" + uuid_util.v4(),
 		"uuid": uuid_util.v4()
 	}
+		
 	position = position.snapped(Vector2.ONE * tile_size)
 	position += Vector2.ONE * tile_size / 2
 	
@@ -64,12 +69,18 @@ func _ready():
 		btn.text = i;
 		btn.connect("pressed", spawnButtonPress.bind(spawnList[i]))
 		container.add_child(btn)
-	
-	wsClient.send({
+		
+	wsClient.connect_to_url("wss://hack.djpiper28.co.uk/ws/")
+	await wsClient.connected_to_server
+	wsClient.send(JSON.stringify({
 		"initialised": false, 
-		"player": playerInfo
-	})
-	print(wsClient.get_message())
+		"player": playerInfo,
+		"coordinates": [position.x, position.y]
+	}))
+	
+	var rec_coords = JSON.parse_string(await wsClient.message_received)
+	position.x = rec_coords["coordinates"][0]
+	position.y = rec_coords["coordinates"][1]
 
 func redrawInventory():
 	for n in inventoryContainer.get_children():
@@ -104,7 +115,7 @@ func _input(event):
 
 	if Input.is_key_pressed(KEY_SPACE) and selectedItem != {}:
 		if inventory[selectedItem.id].amount > 0:
-			wsClient.send({
+			wsClient.send(JSON.stringify({
 				"initialised": true,
 				"player": playerInfo,
 				"action": {
@@ -118,7 +129,7 @@ func _input(event):
 					},
 					"coordinates": [position.x, position.y]
 				}
-			})
+			}))
 			
 			if inventory[selectedItem.id].amount - 1 <= 0:
 				inventory.erase(selectedItem.id)
@@ -136,9 +147,20 @@ func _input(event):
 		$AnimationPlayer.play(inputs_rev[vec])
 	
 
-func make_player_state(make_player_state:int):
-	return JSON.stringify({"name":"eeeeeeeeeee"})
+func make_player_state(make_player_state:Vector2):
+	return JSON.stringify({
+				"initialised": true,
+				"player": playerInfo,
+				"coordinates": [make_player_state.x, make_player_state.y]
+				})
 
 func _on_player_did_move(new_pos):
-	WebSockets.send(make_player_state(new_pos))
-	print(await WebSockets.message_received)
+	wsClient.send(make_player_state(new_pos))
+	var ser_res = JSON.parse_string(await wsClient.message_received)
+	print("Response from move: " + ser_res)
+	
+	for i in ser_res["grid"]["spaces"]:
+		if i["contains"].has_key("Player"):
+			pass
+	
+	
