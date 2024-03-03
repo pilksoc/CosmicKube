@@ -81,7 +81,14 @@ func (s *Server) GetKubeRecipe(c *gin.Context) {
 			return
 		}
 
-		err = s.Database.SetKubeRecipe(kube1, kube2, newKube)
+    image, err := s.Ai.GenerateDalleForKube(newKube)
+    if err != nil {
+      log.Printf("Error generating Dalle for kube: %s", err)
+      c.JSON(500, gin.H{"error": err.Error()})
+      return
+    }
+
+		err = s.Database.SetKubeRecipe(kube1, kube2, newKube, image)
 		if err != nil {
 			log.Printf("Cannot save kube recipe: %s", err)
 			c.JSON(500, gin.H{"error": err.Error()})

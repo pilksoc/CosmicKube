@@ -3,6 +3,7 @@ package model
 import (
 	"log"
 
+	"github.com/CosmicKube/kube_cache/aiStuff"
 	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -21,9 +22,9 @@ func SortKubesUuid(kube1, kube2 *uuid.UUID) {
 }
 
 type Kube struct {
-	Name string    `gorm:"unique;not null" json:"name"`
-	Id   uuid.UUID `gorm:"primaryKey" json:"id"`
-	// Image []byte    `json:"image"`
+	Name  string    `gorm:"unique;not null" json:"name"`
+	Id    uuid.UUID `gorm:"primaryKey" json:"id"`
+	Image []byte    `gorm:"not null" json:"image"`
 }
 
 type KubeRecipe struct {
@@ -42,7 +43,7 @@ type Database struct {
 	Db *gorm.DB
 }
 
-func New(url string) *Database {
+func New(ai *aiStuff.KubeAi, url string) *Database {
 	log.Println("Connecting to database...")
 	db, err := gorm.Open(postgres.Open(url), &gorm.Config{
 		PrepareStmt: true,
@@ -60,7 +61,7 @@ func New(url string) *Database {
 
 	database := &Database{Db: db}
 	log.Println("Seeding database...")
-	database.seed()
+	database.seed(ai)
 
 	log.Println("Migrated database successfully")
 	return database
@@ -92,14 +93,16 @@ func (db *Database) GetKubeRecipe(kube1, kube2 string) (KubeRecipe, error) {
 	return recipe, result.Error
 }
 
-func (db *Database) SetKubeRecipe(kube1, kube2 Kube, newKube string) error {
+func (db *Database) SetKubeRecipe(kube1, kube2 Kube, newKube string, image []byte) error {
 	kube1Id := kube1.Id
 	kube2Id := kube2.Id
 	SortKubesUuid(&kube1Id, &kube2Id)
 
 	log.Printf("Setting kube recipe: %s + %s = %s", kube1.Name, kube2.Name, newKube)
 	err := db.Db.Transaction(func(tx *gorm.DB) error {
-		newKubeObject := Kube{Name: newKube, Id: uuid.New()}
+		newKubeObject := Kube{Name: newKube,
+			Id:    uuid.New(),
+			Image: image}
 		err := tx.Create(&newKubeObject).Error
 		if err != nil {
 			log.Printf("Cannot create new kube: %s", err)

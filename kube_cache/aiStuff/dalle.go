@@ -7,6 +7,9 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
+
+	imgresize "github.com/CosmicKube/kube_cache/imgResize"
 )
 
 func (ai *KubeAi) generateDallePrompt(kubeName string) string {
@@ -32,7 +35,7 @@ type dalleRequest struct {
 	Size       string `json:"size"`
 }
 
-func (ai *KubeAi) GenerateDalleForKube(kubeName string) ([]byte, error) {
+func (ai *KubeAi) generateDalleForKube(kubeName string) ([]byte, error) {
 	log.Printf("Generating Dalle for kube: %s", kubeName)
 	prompt := ai.generateDallePrompt(kubeName)
 	dalleReq := dalleRequest{
@@ -88,6 +91,26 @@ func (ai *KubeAi) GenerateDalleForKube(kubeName string) ([]byte, error) {
 		log.Printf("Error reading image from response: %s", err)
 		return nil, err
 	}
+	return imgresize.ResizeImage(body)
+}
 
-	return body, nil
+func (ai *KubeAi) GenerateDalleForKube(kubeName string) ([]byte, error) {
+	img, err := ai.generateDalleForKube(kubeName)
+	if err != nil {
+		log.Println("Cannot generate image falling back to default image")
+		defaultFile, err := os.Create("default.png")
+		if err != nil {
+			log.Printf("Error creating default file: %s", err)
+			return nil, err
+		}
+
+		img, err := io.ReadAll(defaultFile)
+		if err != nil {
+			log.Printf("Error reading default image: %s", err)
+			return nil, err
+		}
+
+		return img, nil
+	}
+	return img, nil
 }

@@ -1,2 +1,4 @@
 kube_cache
 .env
+*.jpg
+*.png

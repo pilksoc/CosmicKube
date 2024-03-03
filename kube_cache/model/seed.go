@@ -1,18 +1,31 @@
 package model
 
 import (
+	"errors"
+	"log"
+
+	"github.com/CosmicKube/kube_cache/aiStuff"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"log"
 )
 
-func insertKube(name string, tx *gorm.DB) error {
+func insertKube(ai *aiStuff.KubeAi, name string, tx *gorm.DB) error {
+  log.Printf("Checking if kube exists: %s", name)
+  if (tx.Where("name = ?", name).First(&Kube{}).RowsAffected > 0) {
+    return errors.New("Kube already exists")
+  }
+
 	log.Printf("Inserting kube: %s", name)
-	kube := Kube{Name: name, Id: uuid.New()}
+  image, err := ai.GenerateDalleForKube(name)
+  if err != nil {
+    log.Printf("Error generating Dalle for kube: %s", err)
+    return err
+  }
+  kube := Kube{Name: name, Id: uuid.New(), Image: image}
 	return tx.Create(&kube).Error
 }
 
-func insertKubeRecipe(kube1, kube2, output string, tx *gorm.DB) error {
+func insertKubeRecipe(ai *aiStuff.KubeAi, kube1, kube2, output string, tx *gorm.DB) error {
 	log.Printf("Inserting kube recipe: %s + %s = %s", kube1, kube2, output)
 	kube1Row := Kube{}
 	kube2Row := Kube{}
@@ -25,7 +38,7 @@ func insertKubeRecipe(kube1, kube2, output string, tx *gorm.DB) error {
 	kube2Id := kube2Row.Id
 	SortKubesUuid(&kube1Id, &kube2Id)
 
-	err := insertKube(output, tx)
+	err := insertKube(ai, output, tx)
 	if err != nil {
 		return err
 	}
@@ -47,7 +60,7 @@ type recipe struct {
 	output string
 }
 
-func (d *Database) seed() {
+func (d *Database) seed(ai *aiStuff.KubeAi) {
 	err := d.Db.Transaction(func(tx *gorm.DB) error {
 		kubes := []string{
 			"hydrogen",
@@ -65,7 +78,7 @@ func (d *Database) seed() {
 		}
 
 		for _, kube := range kubes {
-			if err := insertKube(kube, tx); err != nil {
+			if err := insertKube(ai, kube, tx); err != nil {
 				return err
 			}
 		}
@@ -91,7 +104,7 @@ func (d *Database) seed() {
 		}
 
 		for _, recipe := range recipes {
-			if err := insertKubeRecipe(recipe.kube1, recipe.kube2, recipe.output, tx); err != nil {
+			if err := insertKubeRecipe(ai, recipe.kube1, recipe.kube2, recipe.output, tx); err != nil {
 				return err
 			}
 		}
