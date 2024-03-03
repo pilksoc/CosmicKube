@@ -135,6 +135,11 @@ func (ai *KubeAi) generateKubeRecipe(kubeName1, kubeName2 string) (string, error
 		return string(body), nil
 	}
 
+  if len(aiResponse.Choices) == 0 {
+    log.Printf("The silly server sent %s, this is very bad", body)
+    return string(body), nil
+  }
+
 	actualLegitMessage := aiResponse.Choices[0].Message.Content
 
 	var aiResp2 aiResp

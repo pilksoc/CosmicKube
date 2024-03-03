@@ -81,8 +81,8 @@ func (ai *KubeAi) generateDalleForKube(kubeName string) ([]byte, error) {
 	}
 
 	if len(dalleResp.Data) == 0 {
-		log.Println("AI is a bitch")
-		return nil, errors.New("AI is a bitch")
+    log.Printf("The silly server sent %s, this is very bad", body)
+    return nil, errors.New("No data in response")
 	}
 
 	log.Println("Downloading dalle response")
