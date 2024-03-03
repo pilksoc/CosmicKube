@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://desv3mmqhiqsa"]
 
-[ext_resource type="Script" path="res://scenes/player_character/player_character.gd" id="1_wpj4g"]
+[ext_resource type="Script" path="res://scenes/other_player/other_player.gd" id="1_lpra8"]
 [ext_resource type="Texture2D" uid="uid://cn58l1sya667a" path="res://assets/player.png" id="2_ldfvl"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nrvy8"]
@@ -75,7 +75,7 @@ _data = {
 }
 
 [node name="PlayerCharacter" type="CharacterBody2D"]
-script = ExtResource("1_wpj4g")
+script = ExtResource("1_lpra8")
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
 target_position = Vector2(0, 19)
@@ -119,23 +119,3 @@ root_node = NodePath("../RayCast2D")
 libraries = {
 "": SubResource("AnimationLibrary_hbknw")
 }
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="SpawnListScroll" type="ScrollContainer" parent="CanvasLayer"]
-offset_top = -1.0
-offset_right = 116.0
-offset_bottom = 131.0
-
-[node name="SpawnListContainer" type="VBoxContainer" parent="CanvasLayer/SpawnListScroll"]
-layout_mode = 2
-
-[node name="Inventory" type="ScrollContainer" parent="CanvasLayer"]
-offset_left = 421.0
-offset_right = 576.0
-offset_bottom = 60.0
-
-[node name="InventoryList" type="VBoxContainer" parent="CanvasLayer/Inventory"]
-layout_mode = 2
-
-[connection signal="player_did_move" from="." to="." method="_on_player_did_move"]
