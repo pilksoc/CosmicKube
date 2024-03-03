@@ -69,6 +69,11 @@ func New(metrics *metrics.Metrics, ai *aiStuff.KubeAi, url string) *Database {
 	return database
 }
 
+func (db *Database) SetKubeImage(kube Kube, image []byte) error {
+  result := db.Db.Model(&kube).Update("image", image)
+  return result.Error
+}
+
 func (db *Database) GetKubeImage(id string) ([]byte, error) {
 	var kube Kube
 	result := db.Db.First(&kube, "id = ?", id)
