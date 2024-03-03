@@ -1,11 +1,11 @@
-name: "Build CosmicKube game server"
+name: "Build CosmicKube cache server"
 on: 
     push:
         branches:
             - main
 jobs:
     build-server:
-        name: "Build Game Server"
+        name: "Build Cache Server"
         runs-on: ubuntu-20.04
         permissions: 
             packages: write
@@ -13,23 +13,21 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Install Rust toolchain
-              uses: actions-rs/toolchain@v1
+            - name: Download Go
+              uses: actions/setup-go@v5
               with:
-                toolchain: stable
-                default: true
-                override: true
+                go-version: '^1.22.1'
 
             - name: Build
               run: |
-                cd backend
-                cargo build --all --release && strip target/release/cosmic_kube && mv target/release/cosmic_kube target/release/cosmic_kube_amd64
+                cd kube_cache
+                go build && strip kube_cache
             
             - name: Upload Artifact
               uses: actions/upload-artifact@v1
               with:
-                name: server
-                path: backend/target/release/cosmic_kube_amd64
+                name: cache_server
+                path: kube_cache/kube_cache
               
             
             - name: Set up Docker Buildx
@@ -48,8 +46,8 @@ jobs:
               uses: docker/build-push-action@v3
               with:
                 context: .
-                file: backend/server.Dockerfile
+                file: kube_cache/cache.Dockerfile
                 push: true
                 tags: |
-                    ghcr.io/pilksoc/cosmickube:dev-latest
-                    ghcr.io/pilksoc/cosmickube:dev-${{ github.run_number }}
+                    ghcr.io/pilksoc/kubecache:latest
+                    ghcr.io/pilksoc/kubecache:dev-${{ github.run_number }}
