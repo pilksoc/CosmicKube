@@ -65,13 +65,6 @@ func main() {
 		},
 	}))
 
-	body, err := ai.GenerateDalleForKube("Nuclear plant")
-	if err != nil {
-		log.Fatalf("SHIT IS FUCKED %s", err)
-	}
-	log.Println("HERE IS THE DATA YOU WANT AND SHIT")
-	log.Println(len(body))
-
 	log.Println("Start up the API")
 	server := server.New(metrics, database, ai)
 	server.Use(router)
