@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	imgresize "github.com/CosmicKube/kube_cache/imgResize"
 )
@@ -81,8 +82,8 @@ func (ai *KubeAi) generateDalleForKube(kubeName string) ([]byte, error) {
 	}
 
 	if len(dalleResp.Data) == 0 {
-    log.Printf("The silly server sent %s, this is very bad", body)
-    return nil, errors.New("No data in response")
+		log.Printf("The silly server sent %s, this is very bad", body)
+		return nil, errors.New("No data in response")
 	}
 
 	log.Println("Downloading dalle response")
@@ -101,6 +102,11 @@ func (ai *KubeAi) generateDalleForKube(kubeName string) ([]byte, error) {
 }
 
 func (ai *KubeAi) GenerateDalleForKube(kubeName string) ([]byte, error) {
+	if time.Since(ai.LastAccess) < apiRestTime {
+		time.Sleep(apiRestTime - time.Since(ai.LastAccess))
+	}
+
+	ai.LastAccess = time.Now()
 	img, err := ai.generateDalleForKube(kubeName)
 	if err != nil {
 		ai.Metrics.IncrementDalleErrors()
