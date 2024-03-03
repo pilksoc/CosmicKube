@@ -1,6 +1,7 @@
 extends Node
 class_name WebSocketClient
 
+@export var base_url: String = "ws://localhost:8000/ws"
 @export var handshake_headers : PackedStringArray
 @export var supported_protocols : PackedStringArray
 @export var tls_trusted_certificate : X509Certificate
@@ -71,9 +72,16 @@ func poll() -> void:
 	while socket.get_ready_state() == socket.STATE_OPEN and socket.get_available_packet_count():
 		message_received.emit(get_message())
 
+func construct_init_msg():
+	var init_obj = {
+		"name":"",
+		"fuck":"tou",
+		"initialise":true
+	}
+	return JSON.stringify(init_obj)
 
 func _ready():
 	connect_to_url("wss://hack.djpiper28.co.uk/ws/")
-
+	
 func _process(delta):
 	poll()
