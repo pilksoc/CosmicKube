@@ -21,6 +21,10 @@ func insertKubeRecipe(kube1, kube2, output string, tx *gorm.DB) error {
 	tx.First(&kube1Row, "name = ?", kube1)
 	tx.First(&kube2Row, "name = ?", kube2)
 
+	kube1Id := kube1Row.Id
+	kube2Id := kube2Row.Id
+	SortKubesUuid(&kube1Id, &kube2Id)
+
 	err := insertKube(output, tx)
 	if err != nil {
 		return err
@@ -30,8 +34,8 @@ func insertKubeRecipe(kube1, kube2, output string, tx *gorm.DB) error {
 	kubeRecipe := KubeRecipe{
 		Id:      uuid.New(),
 		Output:  outputRow.Id,
-		Kube1Id: kube1Row.Id.String(),
-		Kube2Id: kube2Row.Id.String(),
+		Kube1Id: kube1Id,
+		Kube2Id: kube2Id,
 	}
 
 	return tx.Create(&kubeRecipe).Error
@@ -92,9 +96,9 @@ func (d *Database) seed() {
 			}
 		}
 		return nil
-	}).Error()
+	}).Error
 
-	if err != "" {
+	if err != nil {
 		log.Printf("Seeding database failed: %s", err)
 	}
 
