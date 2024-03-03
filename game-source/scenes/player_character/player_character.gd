@@ -23,8 +23,9 @@ var inputs_rev = {
 }
 
 var inventory = {}
-
-var selectedItem = ""
+var selectedItem = {}
+var selectedTile = Vector2.RIGHT * tile_size
+var playerInfo = {}
 
 const spawnList = {
 	"hydrogen": "5652c78a-8bfe-452a-ac29-53746cabfa40",
@@ -46,8 +47,15 @@ const spawnList = {
 }
 
 func _ready():
+	playerInfo = {
+		"name": "Player-" + uuid_util.v4(),
+		"uuid": uuid_util.v4()
+	}
 	position = position.snapped(Vector2.ONE * tile_size)
 	position += Vector2.ONE * tile_size / 2
+	
+	print(position)
+	print(position + selectedTile)
 	
 	for i in spawnList:
 		var btn = Button.new()
@@ -56,46 +64,68 @@ func _ready():
 		container.add_child(btn)
 	
 	wsClient.send({
-		"initialised": true, 
-		"player": {
-			"name": "Player-" + uuid_util.v4(),
-			"uuid": uuid_util.v4()
-		},
-		"coordinates": [position.x, position.y]
+		"initialised": false, 
+		"player": playerInfo
 	})
 	print(wsClient.get_message())
 
-func spawnButtonPress(uuid):
-	print("added " + uuid)
-	
+func redrawInventory():
 	for n in inventoryContainer.get_children():
 		n.remove_child(n)
 		n.queue_free()
 	
-	if uuid in inventory:
-		inventory[uuid] += 1
-	else:
-		inventory[uuid] = 1
-	
 	for k in inventory.keys():
 		var lab = Button.new()
-		lab.text = spawnList.find_key(k) + " x" + str(inventory[k])
-		lab.connect("pressed", itemSelectButton.bind(k))
+		lab.text = inventory[k].name + " x" + str(inventory[k].amount)
+		lab.connect("pressed", itemSelectButton.bind(k, inventory[k].name))
 		inventoryContainer.add_child(lab)
 
-func itemSelectButton(uuid):
-	selectedItem = uuid
+func spawnButtonPress(uuid):
+	print("added " + uuid)
+	
+	if uuid in inventory:
+		inventory[uuid] = {"name": spawnList.find_key(uuid), "amount": inventory[uuid].amount + 1}
+	else:
+		inventory[uuid] = {"name": spawnList.find_key(uuid), "amount": 1}
+	
+	redrawInventory()
+
+func itemSelectButton(uuid, name):
+	selectedItem = {"id": uuid, "name": name}
 	print("New selected Item ", selectedItem)
 
 func _input(event):
 	var vec = Input.get_vector("left", "right", "up", "down")
 
-	if Input.is_key_pressed(KEY_SPACE):
-		wsClient.send({})
-
+	if Input.is_key_pressed(KEY_SPACE) and selectedItem != {}:
+		if inventory[selectedItem.id].amount > 0:
+			wsClient.send({
+				"initialised": true,
+				"player": playerInfo,
+				"action": {
+					"kind": 0,
+					"kube": {
+						"kubeId" : {
+							"uuid": selectedItem.id,
+							"name": selectedItem.name
+						},
+						"coordinates": [selectedTile.x, selectedTile.y]
+					},
+					"coordinates": [position.x, position.y]
+				}
+			})
+			
+			if inventory[selectedItem.id].amount - 1 <= 0:
+				inventory.erase(selectedItem.id)
+				selectedItem = {}
+			else:
+				inventory[selectedItem.id].amount -= 1
+			redrawInventory()
+			
 
 	if vec.length() == 1:
 		print(inputs_rev[vec])
+		selectedTile = vec * tile_size
 		position += vec*100
 		$AnimationPlayer.play(inputs_rev[vec])
 	
