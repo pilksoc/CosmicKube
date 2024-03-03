@@ -17,7 +17,7 @@ type KubeAi struct {
 	LastAccess                time.Time
 }
 
-const apiRestTime = time.Second * 5
+const apiRestTime = time.Second * 7
 
 func New(metrics *metrics.Metrics, endpoint, apiKey, modelId string) *KubeAi {
 	return &KubeAi{
@@ -165,7 +165,7 @@ func (ai *KubeAi) generateKubeRecipe(kubeName1, kubeName2 string) (string, error
 func (ai *KubeAi) GenerateKubeRecipe(kubeName1, kubeName2 string) (string, error) {
 	if time.Since(ai.LastAccess) < apiRestTime {
 		time.Sleep(apiRestTime - time.Since(ai.LastAccess))
-	}
+  }
 	ai.LastAccess = time.Now()
 
 	res, err := ai.generateKubeRecipe(kubeName1, kubeName2)
