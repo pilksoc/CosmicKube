@@ -1,6 +1,7 @@
 use cosmic_kube::grid::Grid;
 use cosmic_kube::kube::Kube;
 use cosmic_kube::local_grid::LocalGrid;
+use cosmic_kube::player::Player;
 use cosmic_kube::space::{Space, SpaceKind};
 use cosmic_kube::Coordinate;
 use core::fmt;
@@ -17,7 +18,7 @@ use serde_repr::{Deserialize_repr, Serialize_repr};
 #[derive(Serialize, Deserialize)]
 pub struct PlayerInfo {
     initialised: bool,
-    player: String,         //Player, //the player requesting the data
+    player: Player,         //Player, //the player requesting the data
     coordinates: [u64; 2],  //current player coordinates
     action: Option<Action>, // 0, block picked up 1, block placed
 }
@@ -61,7 +62,7 @@ fn debug_message(state: &PlayerInfo) {
     // debug: log of event to server console
     println!(
         "{} @ (x:{}, y:{})",
-        state.player, state.coordinates[0], state.coordinates[1]
+        state.player.username, state.coordinates[0], state.coordinates[1]
     );
     let mut _has_action: bool = true;
     match &state.action {
