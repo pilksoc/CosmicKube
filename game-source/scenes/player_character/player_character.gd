@@ -11,12 +11,20 @@ var inputs = {
 	"down": Vector2.DOWN
 }
 
+var inputs_rev = {
+	Vector2.RIGHT:"right",
+	Vector2.LEFT: "left",
+	Vector2.UP: "up",
+	Vector2.DOWN: "down"
+}
+
 func _ready():
 	position = position.snapped(Vector2.ONE * tile_size)
 	position += Vector2.ONE * tile_size / 2
 
 func _input(event):
 	var vec = Input.get_vector("left", "right", "up", "down")
-	if !is_moving and vec.length()==1:
+	if vec.length() == 1:
 		position += vec*100
+		$AnimationPlayer.play(inputs_rev[vec])
 	
