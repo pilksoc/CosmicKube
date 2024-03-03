@@ -24,7 +24,7 @@ impl KubeId {
     }
 }
 
-#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct Kube {
     pub id: KubeId,
     pub name: String,

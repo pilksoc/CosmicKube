@@ -1,8 +1,10 @@
+use serde::{Deserialize, Serialize};
+
 use crate::kube;
 use crate::player;
 use crate::Coordinate;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Serialize, Deserialize)]
 pub struct Space {
     pub coordinate: Coordinate,
     pub contains: SpaceKind,
@@ -16,7 +18,7 @@ impl Space {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Serialize, Deserialize)]
 #[allow(clippy::module_name_repetitions)]
 pub enum SpaceKind {
     Kube(kube::Kube),
