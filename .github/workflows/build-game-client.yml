@@ -2,7 +2,7 @@ name: "Build CosmicKube game client"
 on:
     push:
         branches:
-        - main
+            - main
 
 env:
     GODOT_VERSION: 4.2.1

@@ -7,4 +7,4 @@ pub mod local_grid;
 pub mod cache_client;
 pub mod recipe;
 
-type Coordinate = [u64; 2];
+pub type Coordinate = [u64; 2];

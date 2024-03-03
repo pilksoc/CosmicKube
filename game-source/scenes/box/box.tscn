@@ -1,12 +1,12 @@
 [gd_scene load_steps=2 format=3 uid="uid://cv6rvnsd8jc4u"]
 
-[ext_resource type="Texture2D" uid="uid://c6jm42o02gsfr" path="res://assets/box.png" id="1_q4dmh"]
+[ext_resource type="Texture2D" uid="uid://c6jm42o02gsfr" path="res://assets/box.png" id="1_blfj8"]
 
 [node name="CharacterBody2D" type="CharacterBody2D"]
 
 [node name="Box" type="Sprite2D" parent="."]
 position = Vector2(33, 52)
-texture = ExtResource("1_q4dmh")
+texture = ExtResource("1_blfj8")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 visible = false
