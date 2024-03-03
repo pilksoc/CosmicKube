@@ -67,7 +67,7 @@ impl Grid {
     /// ```rust
     /// use cosmic_kube::grid::Grid;
     /// use cosmic_kube::space::{ Space, SpaceKind };
-    /// 
+    ///
     /// let grid = Grid::from_spaces(
     ///     vec![
     ///         Space::new([0, 2], SpaceKind::EmptySpace),
@@ -206,7 +206,7 @@ impl Grid {
     }
 
     /// This will expand the grid size and change the coordinates of the respective kubes.
-    /// 
+    ///
     /// The change in size can be thought of as "rings of squares" to be added around the outside of the grid. So if the grid used to be a 2×2 grid, adding a ring of squares around the outside will give a 4×4 square.
     pub fn expand_grid(&mut self, rings_to_add: u64) -> Result<(), ResizeError> {
         self.change_grid_by_rings(rings_to_add, GrowDirection::Expand)
