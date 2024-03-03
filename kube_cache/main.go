@@ -19,7 +19,7 @@ func main() {
 	log.Println("Reading config...")
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	log.Println("Using configuration for database...")
