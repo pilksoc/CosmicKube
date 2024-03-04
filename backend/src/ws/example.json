@@ -1,0 +1,1 @@
+{ "initialised" : true, "player" : { "uuid" : "f7993723-2529-50c4-950d-ba104d29b5df", "username" : "pilksoft interactive" }, "coordinates" : [10, 11], "old_coordinates" : [10, 12], "action" : { "kind" : 1, "kube" : { "id" : "f7993723-2529-50c4-950d-ba104d29b5df", "name" : "pilk" }, "coordinates" : [10, 11] } }
