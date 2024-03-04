@@ -34,7 +34,7 @@ func (s *Server) Use(engine *gin.Engine) {
 
 	// index
 	engine.GET("/", s.Index)
-	engine.POST("/", s.IndexPost)
+	engine.POST("/private/craft", s.IndexPost)
 }
 
 func (s *Server) CacheMetrics(c *gin.Context) {

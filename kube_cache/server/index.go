@@ -72,7 +72,7 @@ func (s *Server) Index(c *gin.Context) {
 	}
 
 	selects := s.allKubesSelect(kubes)
-	crafterHtml := fmt.Sprintf(`<form action="/" method="post">
+	crafterHtml := fmt.Sprintf(`<form action="./private/craft" method="post">
   <label for="%s">Name</label>
   <select name="%s">
     %s
@@ -107,6 +107,7 @@ func (s *Server) Index(c *gin.Context) {
       <li><a href="./kubeImageById/:id">/kubeImageById/:id</a></li>
       <li><a href="./private/kubeRecipeByIds/:id1/:id2">/private/kubeRecipeByIds/:id1/:id2</a></li>
       <li><a href="./private/kubeImageByIdNew/:id">/private/kubeImageByIdNew/:id</a></li>
+      <li><a href="./private/craft">/private/craft</a></li>
       <li><a href="./cache_metrics">/cache_metrics</a></li>
       <li><a href="./metrics">/metrics</a></li>
     </ul>
