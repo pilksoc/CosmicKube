@@ -79,6 +79,7 @@ func (s *Server) GetKubeImage(c *gin.Context) {
 	c.Data(200, "image/png", image)
 	c.Header("Cache-Control", cacheControlHeader)
 	s.Metrics.IncrementCacheHits()
+  s.Metrics.IncrementImagesRetrieved()
 }
 
 func (s *Server) GetAllKubes(c *gin.Context) {
