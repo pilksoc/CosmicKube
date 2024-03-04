@@ -1,4 +1,13 @@
-# dotenv setup
+# Caching Server For Kubes and Recipes
+
+## Running
+
+```bash
+go build
+./kube_cache
+```
+
+## Dotenv setup
 
 ```dotenv
 PGHOST=don't put secrets in main
