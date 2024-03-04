@@ -15,6 +15,9 @@ type Server struct {
 	Metrics  *metrics.Metrics
 }
 
+// 24 hours
+const cacheControlHeader = "max-age=86400, public"
+
 func New(metrics *metrics.Metrics, database *model.Database, ai *aiStuff.KubeAi) *Server {
 	return &Server{Database: database, Ai: ai, Metrics: metrics}
 }
@@ -103,9 +106,6 @@ func (s *Server) GetKube(c *gin.Context) {
 	c.Header("Cache-Control", cacheControlHeader)
 	s.Metrics.IncrementCacheHits()
 }
-
-// 24 hours
-const cacheControlHeader = "max-age=86400"
 
 func (s *Server) GetKubeRecipe(c *gin.Context) {
 	id1 := c.Param("id1")

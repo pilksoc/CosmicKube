@@ -185,6 +185,7 @@ func _on_player_did_move(new_pos):
 			var obj = BoxObject.instance()
 			obj.transform.origin = Vector2(i["contains"]["coordinate"][0], i["contains"]["coordinate"][1])
 			obj.fetch_url = "https://hack.djpiper28.co.uk/cache/kubeImageById/" + i["contains"]["Kube"]["id"]
+			print("https://hack.djpiper28.co.uk/cache/kubeImageById/" + i["contains"]["Kube"]["id"])
 			OtherObjects.add_child(obj)
 			pass
 	
