@@ -70,8 +70,8 @@ func New(metrics *metrics.Metrics, ai *aiStuff.KubeAi, url string) *Database {
 }
 
 func (db *Database) SetKubeImage(kube Kube, image []byte) error {
-  result := db.Db.Model(&kube).Update("image", image)
-  return result.Error
+	result := db.Db.Model(&kube).Update("image", image)
+	return result.Error
 }
 
 func (db *Database) GetKubeImage(id string) ([]byte, error) {
