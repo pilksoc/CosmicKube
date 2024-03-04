@@ -43,7 +43,7 @@ func (s *Server) IndexPost(c *gin.Context) {
 </head>
 <body>
   <h1>New Kube: %s</h1>
-  <p><a href='./'>Back</a></p>
+  <p><a href='../'>Back</a></p>
   <img src="../kubeImageById/%s" style="max-width: 100px; max-height: 100px;" loading="lazy" alt="%s"/>
   <p><a href="../private/kubeImageByIdNew/%s">Regenerate Image</a></p>
 </body>`,
