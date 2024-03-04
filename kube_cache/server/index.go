@@ -45,7 +45,7 @@ func (s *Server) IndexPost(c *gin.Context) {
   <h1>New Kube: %s</h1>
   <p><a href='./'>Back</a></p>
   <img src="./kubeImageById/%s" style="max-width: 100px; max-height: 100px;" loading="lazy" alt="%s"/>
-  <p><a href="./kubeImageByIdNew/%s">Regenerate Image</a></p>
+  <p><a href="./private/kubeImageByIdNew/%s">Regenerate Image</a></p>
 </body>`,
 		kube.Name,
 		kube.Id,
@@ -65,9 +65,9 @@ func (s *Server) Index(c *gin.Context) {
 	kubesHtml := ""
 	for _, kube := range kubes {
 		kubesHtml += fmt.Sprintf(`<div style="max-width: 100px;">
-      <h3 class="word-wrap: break-word;">%s</h3>
-      <a href="./kubeImageByIdNew/%s">Regenerate Image</a>
-      <img src="./kubeImageById/%s" style="max-width: 100px; max-height: 100px;" loading="lazy" alt="%s"/>
+      <h3 style="word-wrap: break-word">%s</h3>
+      <a href="./private/kubeImageByIdNew/%s">Regenerate Image</a>
+      <img src="./kubeImageById/%s" style="max-width: 100px; max-height: 100px" loading="lazy" alt="%s"/>
     </div>`, kube.Name, kube.Id, kube.Id, kube.Name)
 	}
 
@@ -95,23 +95,31 @@ func (s *Server) Index(c *gin.Context) {
 <head>
   <title>Kube Cache</title>
 </head>
-<body class="display: flex; margin: 0px; flex-direction: column; max-width: 100vw;">
+<body style="display: flex; margin: 0px; flex-direction: column; max-width: 100vw">
   <h1>Kube Cache</h1>
   <h2>Endpoints</h2>
-  <ul>
-    <li><a href="./">/.</a></li>
-    <li><a href="./kubes">/kubes</a></li>
-    <li><a href="./kubeById/:id">/kubeById/:id</a></li>
-    <li><a href="./kubeImageById/:id">/kubeImageById/:id</a></li>
-    <li><a href="./kubeRecipes">/kubeRecipes</a></li>
-    <li><a href="./kubeRecipeByIds/:id1/:id2">/kubeRecipeByIds/:id1/:id2</a></li>
-    <li><a href="./cache_metrics">/cache_metrics</a></li>
-    <li><a href="./metrics">/metrics</a></li>
-  </ul>
+  <div style="display: flex; flex-direction: row; gap: 10px; flex-wrap: wrap; justify-content: between">
+    <ul style="min-width: 200px">
+      <li><a href="./">/.</a></li>
+      <li><a href="./kubes">/kubes</a></li>
+      <li><a href="./kubeById/:id">/kubeById/:id</a></li>
+      <li><a href="./kubeRecipes">/kubeRecipes</a></li>
+      <li><a href="./kubeImageById/:id">/kubeImageById/:id</a></li>
+      <li><a href="./private/kubeRecipeByIds/:id1/:id2">/private/kubeRecipeByIds/:id1/:id2</a></li>
+      <li><a href="./private/kubeImageByIdNew/:id">/private/kubeImageByIdNew/:id</a></li>
+      <li><a href="./cache_metrics">/cache_metrics</a></li>
+      <li><a href="./metrics">/metrics</a></li>
+    </ul>
+    <div style="min-width: 200px">
+      <p>
+        Metrics are collected on Grafana, private endpoints requires the same proxy authentication.
+      </p>
+    </div>
+  </div>
   <h2>Create New Kube</h2>
     %s
   <h2>Kubes</h2>
-  <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px;  align-items: center; align-content: center;">
+  <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px;  align-items: center; align-content: center">
     %s
   </div>
   <p>End of cache</p>

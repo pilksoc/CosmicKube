@@ -26,11 +26,11 @@ func New(metrics *metrics.Metrics, database *model.Database, ai *aiStuff.KubeAi)
 func (s *Server) Use(engine *gin.Engine) {
 	engine.GET("/cache_metrics", s.CacheMetrics)
 	engine.GET("/kubes", s.GetAllKubes)
-	engine.GET("/kubeRecipes", s.GetAllKubeRecipes)
 	engine.GET("/kubeById/:id", s.GetKube)
+	engine.GET("/kubeRecipes", s.GetAllKubeRecipes)
 	engine.GET("/kubeImageById/:id", s.GetKubeImage)
-	engine.GET("/kubeImageByIdNew/:id", s.RegenerateImage)
-	engine.GET("/kubeRecipeByIds/:id1/:id2", s.GetKubeRecipe)
+	engine.GET("/private/kubeImageByIdNew/:id", s.RegenerateImage)
+	engine.GET("/private/kubeRecipeByIds/:id1/:id2", s.GetKubeRecipe)
 
 	// index
 	engine.GET("/", s.Index)

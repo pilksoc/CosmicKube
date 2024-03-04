@@ -86,7 +86,7 @@ impl CacheClient {
     ///
     /// If the REST server connection fails, or if the output is an error (like 404), then this will return an Err.
     pub async fn get_recipe_by_id(&self, id1: Uuid, id2: Uuid) -> Result<Recipe, RestError> {
-        let res = reqwest::get(self.url.join(format!("kubeRecipeByIds/{}/{}", id1, id2).as_str()).unwrap()).await?.text().await?;
+        let res = reqwest::get(self.url.join(format!("private/kubeRecipeByIds/{}/{}", id1, id2).as_str()).unwrap()).await?.text().await?;
         Ok(serde_json::from_str(&res)?)
     }
 }
