@@ -60,14 +60,14 @@ pub async fn client_connection(ws: WebSocket, clients: Clients) {
 // ->recieve client game info <- send back client game state
 // wwwwwwwwwwwwwwwwwwwww i am so tired
 async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
-    println!("received message from {}: {:?}", client_id, msg); //debug
+    //println!("received message from {}: {:?}", client_id, msg); //debug
 
     let message = match msg.to_str() {
         Ok(v) => v,
         Err(_) => return,
     };
 
-    println!("{}", message);
+    //println!("{}", message);
 
     let locked = clients.lock().await;
     match locked.get(client_id) {

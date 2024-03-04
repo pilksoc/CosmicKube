@@ -1,62 +1,9 @@
-use cosmic_kube::kube::Kube;
 use cosmic_kube::local_grid::LocalGrid;
-use cosmic_kube::player::Player;
-use cosmic_kube::space::{Space, SpaceKind};
-use cosmic_kube::Coordinate;
-use core::fmt;
+use cosmic_kube::modify_gamestate::{modify_gamestate, PlayerInfo};
 use rand::Rng;
-use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use serde_repr::{Deserialize_repr, Serialize_repr};
 use cosmic_kube::WORLD;
 
-//example valid json:
-// { "initialised": true, "player": "charlie zoot", "coordinates": [10, 10], "action": { "kind": 1, "kube": { "id": {"uuid": "f7993723-2529-50c4-950d-ba104d29b5df" }, "name": "dirt" }, "coordinates": [10,11] } }
-
-
-// this is the data we expect to recieve from the player
-#[derive(Serialize, Deserialize)]
-pub struct PlayerInfo {
-    initialised: bool,
-    player: Player,         //Player, //the player requesting the data
-    coordinates: [u64; 2],  //current player coordinates
-    old_coordinates: Option<[u64; 2]>, //where the player was previously
-    action: Option<Action>, // 0, block picked up 1, block placed
-}
-
-#[derive(Serialize_repr, Deserialize_repr)]
-#[repr(u8)]
-enum ActionType {
-    Pickup = 0,
-    Place = 1,
-}
-
-impl fmt::Display for ActionType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            ActionType::Pickup => write!(f, "pickup"),
-            ActionType::Place => write!(f, "place"),
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct Action {
-    kind: ActionType,
-    kube: Kube,
-    coordinates: Coordinate,
-}
-
-fn perform_action(action: Action) {
-    let kube_result: SpaceKind;
-    match action.kind {
-        ActionType::Pickup => kube_result = SpaceKind::EmptySpace,
-        ActionType::Place => kube_result = SpaceKind::Kube(action.kube),
-    }
-
-    let space_in_question: Space = Space::new(action.coordinates, kube_result);
-    WORLD.lock().unwrap().insert(space_in_question);
-}
 
 fn debug_message(state: &PlayerInfo) {
     // debug: log of event to server console
@@ -74,27 +21,16 @@ fn debug_message(state: &PlayerInfo) {
 fn recalculate_game(state: PlayerInfo) -> String {
     debug_message(&state); //debug
 
-    //remove the players old location in the world, if provided
-    match &state.old_coordinates {
-        Some(c) => WORLD.lock().unwrap().insert(Space::new(*c, SpaceKind::EmptySpace)),
-        _ => (),
-    }
+    let player_initialised = state.initialised;
+    let player_location = state.coordinates;
 
-    // store the players location in the world
-    let playerspace: Space = Space::new(state.coordinates, SpaceKind::Player(state.player));
-    WORLD.lock().unwrap().insert(playerspace);
-
-    // then we want to update the grid by performing action
-    match state.action {
-        Some(p) => perform_action(p),
-        _ => (),
-    }
+    modify_gamestate(state);
 
     let new_grid: LocalGrid =
-        LocalGrid::from_grid_and_coord(&WORLD.lock().unwrap(), state.coordinates, 48);
+        LocalGrid::from_grid_and_coord(&WORLD.lock().unwrap(), player_location, 48);
     let resp: Value;
 
-    if state.initialised {
+    if player_initialised {
         // if the player is not new to the game, continue game loop
         resp = json!({
             "grid" : new_grid,
@@ -102,7 +38,8 @@ fn recalculate_game(state: PlayerInfo) -> String {
     } else {
         let mut rng = rand::thread_rng();
         resp = json!({
-            "coordinates" : [rng.gen_range(0..2048), rng.gen_range(0..2048)]
+            //reduced to 20 for debugging purposes, for the live game we should set this back to grid size (2048)
+            "coordinates" : [rng.gen_range(0..20), rng.gen_range(0..20)]
         });
     }
 
