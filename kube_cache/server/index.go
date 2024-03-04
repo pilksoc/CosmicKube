@@ -66,8 +66,8 @@ func (s *Server) Index(c *gin.Context) {
 	for _, kube := range kubes {
 		kubesHtml += fmt.Sprintf(`<div style="max-width: 100px;">
       <h3 style="word-wrap: break-word">%s</h3>
-      <a href="./private/kubeImageByIdNew/%s">Regenerate Image</a>
-      <img src="./kubeImageById/%s" style="max-width: 100px; max-height: 100px" loading="lazy" alt="%s"/>
+      <a href="../private/kubeImageByIdNew/%s">Regenerate Image</a>
+      <img src="../kubeImageById/%s" style="max-width: 100px; max-height: 100px" loading="lazy" alt="%s"/>
     </div>`, kube.Name, kube.Id, kube.Id, kube.Name)
 	}
 
