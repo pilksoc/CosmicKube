@@ -16,9 +16,9 @@ func (s *Server) Index(c *gin.Context) {
 	kubesHtml := ""
 	for _, kube := range kubes {
 		kubesHtml += fmt.Sprintf(`<div style="max-width: 100px;">
-      <h3>%s</h3>
+      <h3 class="word-wrap: break-word;">%s</h3>
       <a href="./kubeImageByIdNew/%s">Regenerate Image</a>
-      <img src="./kubeImageById/%s" style="max-width: 100px; max-height: 100px; align-items: center; align-content: center;" loading="lazy" alt="%s"/>
+      <img src="./kubeImageById/%s" style="max-width: 100px; max-height: 100px;" loading="lazy" alt="%s"/>
     </div>`, kube.Name, kube.Id, kube.Id, kube.Name)
 	}
 
@@ -28,7 +28,7 @@ func (s *Server) Index(c *gin.Context) {
 </head>
 <body>
   <h1>Kube Cache</h1>
-  <h2>Endpoints</h2>  
+  <h2>Endpoints</h2>
   <ul>
     <li><a href="./">/.</a></li>
     <li><a href="./kubes">/kubes</a></li>
@@ -40,9 +40,10 @@ func (s *Server) Index(c *gin.Context) {
     <li><a href="./metrics">/metrics</a></li>
   </ul>
   <h2>Kubes</h2>
-  <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px;">
+  <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px;  align-items: center; align-content: center;">
     %s
   </div>
+  <p>End of cache</p>
 </body>`, kubesHtml)
 
 	c.Data(200, "text/html", []byte(body))
