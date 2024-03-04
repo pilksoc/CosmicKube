@@ -50,7 +50,7 @@ func (s *Server) IndexPost(c *gin.Context) {
 		kube.Name,
 		kube.Id,
 		kube.Id,
-		kube.Name)
+		kube.Id)
 
 	c.Data(200, "text/html", []byte(html))
 }
