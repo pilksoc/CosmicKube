@@ -1,6 +1,5 @@
 use cosmic_kube::local_grid::LocalGrid;
 use cosmic_kube::modify_gamestate::{modify_gamestate, PlayerInfo};
-use rand::Rng;
 use serde_json::{json, Value};
 use cosmic_kube::WORLD;
 
@@ -18,7 +17,7 @@ fn debug_message(state: &PlayerInfo) {
     }
 }
 
-fn recalculate_game(state: PlayerInfo) -> String {
+async fn recalculate_game(state: PlayerInfo, id: &str) -> String {
     debug_message(&state); //debug
 
     let player_initialised = state.initialised;
@@ -27,7 +26,7 @@ fn recalculate_game(state: PlayerInfo) -> String {
     modify_gamestate(state);
 
     let new_grid: LocalGrid =
-        LocalGrid::from_grid_and_coord(&WORLD.lock().unwrap(), player_location, 48);
+        LocalGrid::from_grid_and_coord(&WORLD.lock().await.unwrap(), player_location, 48);
     let resp: Value;
 
     if player_initialised {
@@ -36,19 +35,18 @@ fn recalculate_game(state: PlayerInfo) -> String {
             "grid" : new_grid,
         });
     } else {
-        let mut rng = rand::thread_rng();
         resp = json!({
-            //reduced to 20 for debugging purposes, for the live game we should set this back to grid size (2048)
-            "coordinates" : [rng.gen_range(0..20), rng.gen_range(0..20)]
+            "coordinates" : player_location,
+            "uuid" : id
         });
     }
 
     resp.to_string()
 }
 
-pub fn create_response(message: &str) -> String {
+pub fn create_response(message: &str, client_id: &str) -> String {
     match serde_json::from_str::<PlayerInfo>(message) {
-        Ok(info) => recalculate_game(info),
+        Ok(info) => recalculate_game(info, client_id),
         Err(_) => "Ding Dong!!! your json is WRONG".to_string(),
     }
 }
