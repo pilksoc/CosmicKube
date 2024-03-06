@@ -8,19 +8,28 @@ use serde_repr::{Deserialize_repr, Serialize_repr};
 use crate::{kube::Kube, player::Player, space::{Space, SpaceKind}, Coordinate, WORLD, CLIENTS};
 
 // this is the data we expect to recieve from the player
+/// The data to be received from the player's client.
 #[derive(Serialize, Deserialize)]
 pub struct PlayerInfo {
+    /// Whether the player is new to the game.
     pub initialised: bool,
-    pub player: Player,         //Player, //the player requesting the data
-    pub coordinates: [u64; 2],  //current player coordinates
-    old_coordinates: Option<[u64; 2]>, //where the player was previously
-    pub action: Option<Action>, // 0, block picked up 1, block placed
+    // The player requesting the data.
+    pub player: Player,
+    /// Current player coordinates.
+    pub coordinates: [u64; 2],
+    /// Where the player was previously.
+    old_coordinates: Option<[u64; 2]>,
+    /// The action the player performed, if any. Represented using 0 for block picked up, 1 for block placed.
+    pub action: Option<Action>
 }
 
+/// The type of action performed.
 #[derive(Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
 pub enum ActionType {
+    /// The player has picked up a block.
     Pickup = 0,
+    /// The player has placed a block.
     Place = 1,
 }
 
@@ -42,7 +51,7 @@ pub struct Action {
 
 pub async fn modify_gamestate(player_state: PlayerInfo) {
     // move the player's position on the grid
-    move_player(player_state.old_coordinates, player_state.coordinates, player_state.player);
+    move_player(player_state.old_coordinates, player_state.coordinates, player_state.player).await;
 
     // then we want to update the grid by performing action
     match player_state.action {

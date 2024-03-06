@@ -23,10 +23,14 @@ async fn recalculate_game(state: PlayerInfo, id: &str) -> String {
     let player_initialised = state.initialised;
     let player_location = state.coordinates;
 
-    modify_gamestate(state);
+    modify_gamestate(state).await;
 
-    let new_grid: LocalGrid =
-        LocalGrid::from_grid_and_coord(&WORLD.lock().await.unwrap(), player_location, 48);
+    // The dereferencing looks a little weird. Here's what's going on:
+    // Tokio's Mutex when locking returns a MutexGuard.
+    // This is the same behaviour as std::sync::Mutex.
+    // Thus, we first need to dereference it to get to the actual Grid type,
+    // and then send a reference to the Grid type to the LocalGrid constructor.
+    let new_grid = LocalGrid::from_grid_and_coord(&(*WORLD.lock().await), player_location, 48);
     let resp: Value;
 
     if player_initialised {
@@ -44,9 +48,9 @@ async fn recalculate_game(state: PlayerInfo, id: &str) -> String {
     resp.to_string()
 }
 
-pub fn create_response(message: &str, client_id: &str) -> String {
+pub async fn create_response(message: &str, client_id: &str) -> String {
     match serde_json::from_str::<PlayerInfo>(message) {
-        Ok(info) => recalculate_game(info, client_id),
+        Ok(info) => recalculate_game(info, client_id).await,
         Err(_) => "Ding Dong!!! your json is WRONG".to_string(),
     }
 }
