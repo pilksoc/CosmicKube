@@ -8,7 +8,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	imgresize "github.com/CosmicKube/kube_cache/imgResize"
@@ -117,19 +116,7 @@ func (ai *KubeAi) GenerateDalleForKube(kubeName string) ([]byte, error) {
 	img, err := ai.generateDalleForKube(kubeName)
 	if err != nil {
 		ai.Metrics.IncrementDalleErrors()
-		log.Println("Cannot generate image falling back to default image")
-		defaultFile, err := os.Open("default.png")
-		if err != nil {
-			log.Printf("Error creating default file: %s", err)
-			return nil, err
-		}
-
-		img, err := io.ReadAll(defaultFile)
-		if err != nil {
-			log.Printf("Error reading default image: %s", err)
-			return nil, err
-		}
-
+		log.Printf("Error generating Dalle for kube: %s", err)
 		return img, nil
 	}
 	ai.Metrics.IncrementDalleRequests()

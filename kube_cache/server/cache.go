@@ -2,12 +2,15 @@ package server
 
 import (
 	"errors"
+	"io"
 	"log"
+	"os"
 
 	"github.com/CosmicKube/kube_cache/aiStuff"
 	"github.com/CosmicKube/kube_cache/metrics"
 	"github.com/CosmicKube/kube_cache/model"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type Server struct {
@@ -143,10 +146,29 @@ func (s *Server) craft(c *gin.Context, id1, id2 string) (model.KubeRecipe, error
 			return model.KubeRecipe{}, errors.New("Cannot generate kube recipe")
 		}
 
+		log.Printf("Using default image for kube %s until DALLE finishes", newKubeId)
+		defaultFile, err := os.Open("default.png")
+		if err != nil {
+			log.Printf("Error creating default file: %s", err)
+			return model.KubeRecipe{}, err
+		}
+
+		img, err := io.ReadAll(defaultFile)
+		if err != nil {
+			log.Printf("Error reading default image: %s", err)
+			return model.KubeRecipe{}, err
+		}
+
+		err = s.Database.SetKubeRecipe(kube1, kube2, newKubeId, img)
+		if err != nil {
+			log.Printf("Cannot save kube recipe: %s", err)
+		}
+
 		recipe, err = s.Database.GetKubeRecipe(id1, id2)
 		if err != nil {
 			log.Printf("Cannot get kube recipe: %s", err)
 		}
+
 		log.Printf("Generated new kube: %s, generating image in new thread", newKubeId)
 		go func() {
 			image, err := s.Ai.GenerateDalleForKube(newKubeId)
@@ -154,9 +176,14 @@ func (s *Server) craft(c *gin.Context, id1, id2 string) (model.KubeRecipe, error
 				log.Printf("Error generating Dalle for kube: %s", err)
 			}
 
-			err = s.Database.SetKubeRecipe(kube1, kube2, newKubeId, image)
+			id, err := uuid.Parse(newKubeId)
 			if err != nil {
-				log.Printf("Cannot save kube recipe: %s", err)
+				log.Printf("Error parsing new kube id: %s", err)
+			}
+
+			err = s.Database.SetKubeImage(model.Kube{Id: id}, image)
+			if err != nil {
+				log.Printf("Cannot save kube image: %s", err)
 			}
 		}()
 

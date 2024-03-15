@@ -176,9 +176,9 @@ func (ai *KubeAi) GenerateKubeRecipe(kubeName1, kubeName2 string) (string, error
 		}
 
 		ai.Lock.Unlock()
-    sleepTime := apiRestTime - time.Since(ai.LastAccess)
+		sleepTime := apiRestTime - time.Since(ai.LastAccess)
 
-    log.Printf("Rate limited, going to bed for %dms...", sleepTime / time.Millisecond)
+		log.Printf("Rate limited, going to bed for %dms...", sleepTime/time.Millisecond)
 		time.Sleep(sleepTime)
 	}
 
