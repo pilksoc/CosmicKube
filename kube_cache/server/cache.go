@@ -143,23 +143,23 @@ func (s *Server) craft(c *gin.Context, id1, id2 string) (model.KubeRecipe, error
 			return model.KubeRecipe{}, errors.New("Cannot generate kube recipe")
 		}
 
-		image, err := s.Ai.GenerateDalleForKube(newKubeId)
-		if err != nil {
-			log.Printf("Error generating Dalle for kube: %s", err)
-			return model.KubeRecipe{}, errors.New("Error generating Dalle for kube")
-		}
+		log.Printf("Generated new kube: %s, generating image in new thread", newKubeId)
+		go func() {
+			image, err := s.Ai.GenerateDalleForKube(newKubeId)
+			if err != nil {
+				log.Printf("Error generating Dalle for kube: %s", err)
+			}
 
-		err = s.Database.SetKubeRecipe(kube1, kube2, newKubeId, image)
-		if err != nil {
-			log.Printf("Cannot save kube recipe: %s", err)
-			return model.KubeRecipe{}, errors.New("Cannot save kube recipe")
-		}
+			err = s.Database.SetKubeRecipe(kube1, kube2, newKubeId, image)
+			if err != nil {
+				log.Printf("Cannot save kube recipe: %s", err)
+			}
 
-		recipe, err = s.Database.GetKubeRecipe(id1, id2)
-		if err != nil {
-			log.Printf("Cannot get kube recipe: %s", err)
-			return model.KubeRecipe{}, errors.New("Cannot get kube recipe")
-		}
+			recipe, err = s.Database.GetKubeRecipe(id1, id2)
+			if err != nil {
+				log.Printf("Cannot get kube recipe: %s", err)
+			}
+		}()
 
 	} else {
 		s.Metrics.IncrementCacheHits()
