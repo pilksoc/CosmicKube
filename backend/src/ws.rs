@@ -81,10 +81,7 @@ async fn call_remove_player(uuid: &str) {
 async fn client_msg(client_id: &str, msg: Message) {
     //println!("received message from {}: {:?}", client_id, msg); //debug
 
-    let message = match msg.to_str() {
-        Ok(v) => v,
-        Err(_) => return,
-    };
+    let Ok(message) = msg.to_str() else { return };
 
     //println!("{message}");
 
@@ -95,7 +92,9 @@ async fn client_msg(client_id: &str, msg: Message) {
                 let _ = sender.send(Ok(Message::text(create_response(message, client_id).await)));
             }
         }
-        None => return,
+        None => {
+            eprintln!("Couldn't find game client in client hashmap! Client ID: {client_id}");
+            return
+        },
     }
-    return;
 }
