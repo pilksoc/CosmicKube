@@ -143,6 +143,10 @@ func (s *Server) craft(c *gin.Context, id1, id2 string) (model.KubeRecipe, error
 			return model.KubeRecipe{}, errors.New("Cannot generate kube recipe")
 		}
 
+		recipe, err = s.Database.GetKubeRecipe(id1, id2)
+		if err != nil {
+			log.Printf("Cannot get kube recipe: %s", err)
+		}
 		log.Printf("Generated new kube: %s, generating image in new thread", newKubeId)
 		go func() {
 			image, err := s.Ai.GenerateDalleForKube(newKubeId)
@@ -153,11 +157,6 @@ func (s *Server) craft(c *gin.Context, id1, id2 string) (model.KubeRecipe, error
 			err = s.Database.SetKubeRecipe(kube1, kube2, newKubeId, image)
 			if err != nil {
 				log.Printf("Cannot save kube recipe: %s", err)
-			}
-
-			recipe, err = s.Database.GetKubeRecipe(id1, id2)
-			if err != nil {
-				log.Printf("Cannot get kube recipe: %s", err)
 			}
 		}()
 
