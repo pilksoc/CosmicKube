@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"log"
+	"sort"
 
 	"github.com/CosmicKube/kube_cache/model"
 	"github.com/gin-gonic/gin"
@@ -61,6 +62,10 @@ func (s *Server) Index(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+
+	sort.Slice(kubes, func(i, j int) bool {
+		return kubes[i].Name < kubes[j].Name
+	})
 
 	kubesHtml := ""
 	for _, kube := range kubes {
