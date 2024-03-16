@@ -80,7 +80,6 @@ impl Grid {
         else {
             None
         }
-        
     }
     /// Checks that a coordinate is not beyond the bounds of the grid.
     pub fn in_bounds(&self, coordinate: [u64; 2]) -> bool {
