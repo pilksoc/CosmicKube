@@ -4,13 +4,14 @@
   import Counter from "./lib/Counter.svelte";
   import KubeWebSocket from "./lib/websockets";
 	import { onMount } from 'svelte';
+  import { v4 } from 'uuid';
 
   const width = 16;
   const height = 16;
   const cube_size = 100;
 
   onMount(() => {
-    const ws = new KubeWebSocket("Danny");
+    const ws = new KubeWebSocket(v4());
 
     ws.onError = (err) => {
       console.error(err);
