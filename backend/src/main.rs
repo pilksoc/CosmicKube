@@ -12,6 +12,8 @@ type Result<T> = std::result::Result<T, Rejection>;
 #[tokio::main]
 async fn main() {
     //initialise a hashmap to store currently connected clients. We may want some more logic here if we want currently connected clients to be stored somewhere
+    println!("Turning console on"); //debug
+    console_subscriber::init();
 
     println!("Configuring websocket route"); //debug
     let ws_route = warp::path("ws")
