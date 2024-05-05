@@ -23,6 +23,7 @@ async fn recalculate_game(state: PlayerInfo, id: &str) -> String {
     let player_initialised = state.initialised;
     let player_location = state.coordinates;
 
+    println!("Generating new game state for {id}");
     modify_gamestate(state).await;
 
     // The dereferencing looks a little weird. Here's what's going on:
@@ -34,11 +35,13 @@ async fn recalculate_game(state: PlayerInfo, id: &str) -> String {
     let resp: Value;
 
     if player_initialised {
+        println!("Continuing game loop for {id}");
         // if the player is not new to the game, continue game loop
         resp = json!({
             "grid" : new_grid,
         });
     } else {
+        println!("Issuing join data for {id}");
         resp = json!({
             "coordinates" : player_location,
             "uuid" : id
