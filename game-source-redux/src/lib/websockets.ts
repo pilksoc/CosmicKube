@@ -5,7 +5,7 @@ import {
   Player,
   PlayerInfo,
   SpaceKinds,
-} from "./types/kube_types";
+} from "./kube_types";
 
 const baseUrl = "https://hack.djpiper28.co.uk/ws/";
 

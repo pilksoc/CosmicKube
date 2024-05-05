@@ -1,6 +1,6 @@
 import "./app.css";
 import App from "./App.svelte";
-import KubeWebSocket from "./websockets";
+import KubeWebSocket from "./lib/websockets";
 
 const app = new App({
   target: document.getElementById("app")!,
