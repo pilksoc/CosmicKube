@@ -34,5 +34,14 @@ pipeline {
                 fi ;'''
             }
         }
+        stage('Web Build') {
+            steps {
+                sh '''cd game-source-redeux || exit 1
+                pnpm i
+                pnpm build
+                cp -r dist/* /home/static/kube-frontend/
+                '''
+            }
+        }
     }
 }
