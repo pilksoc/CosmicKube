@@ -20,6 +20,22 @@ pipeline {
         }
         stage('Web Build') {
             steps {
+                sh '''mkdir -v -p build/web
+                cd $PROJECT_PATH
+                godot --headless --verbose --export-release "Web" ../build/web/index.html 2>&1 | tee output.txt
+                echo Reading build logs...
+                if search="$(cat output.txt | grep 'ERROR: Project export')"
+                then
+                echo "Build failed!"
+                exit 1
+                else
+                echo "Build succeeded!"
+                exit 0
+                fi ;'''
+            }
+        }
+        stage('Web Build') {
+            steps {
                 sh '''cd game-source-redeux || exit 1
                 pnpm i
                 pnpm build
