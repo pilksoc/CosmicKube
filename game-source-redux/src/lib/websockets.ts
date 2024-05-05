@@ -35,12 +35,12 @@ export default class KubeWebSocket {
     this.ws.onmessage = this.onMessage.bind(this);
     this.ws.onclose = this.onClose.bind(this);
     this.ws.onerror = this.onError.bind(this);
-    this.ws.onopen = this.onopen.bind(this)
+    this.ws.onopen = this.onOpen.bind(this);
   }
 
   private onMessage(event: MessageEvent) {
-    console.log(event.data);
     const data: string = event.data;
+    console.log(`Received: ${data}`);
     const eventData: PlayerInfo = JSON.parse(data) as PlayerInfo;
 
     const action = eventData.action;
@@ -70,7 +70,7 @@ export default class KubeWebSocket {
     this.ws.send(data);
   }
 
-  private onopen() {
+  private onOpen() {
     const data: PlayerInfo = {
       initialised: false,
       player: {
