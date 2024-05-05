@@ -73,7 +73,6 @@ pub async fn perform_action(action: Action) {
 }
 
 pub async fn move_player(old_pos: Option<[u64; 2]>, new_pos: [u64; 2], player: Player) {
-
     let player_key = player.uuid.to_string();
 
     //remove the players old location in the world, if provided
