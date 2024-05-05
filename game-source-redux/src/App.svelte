@@ -2,10 +2,24 @@
   import svelteLogo from "./assets/svelte.svg";
   import viteLogo from "/vite.svg";
   import Counter from "./lib/Counter.svelte";
+  import KubeWebSocket from "./lib/websockets";
+	import { onMount } from 'svelte';
 
   const width = 16;
   const height = 16;
   const cube_size = 100;
+
+  onMount(() => {
+    KubeWebSocket.onError = (err) => {
+      console.error(err);
+    };
+
+    KubeWebSocket.onClose = () => {
+      console.error("Connection closed");
+    };
+
+    KubeWebSocket.connectAs("DannyBoy");
+  });
 </script>
 
 <main>

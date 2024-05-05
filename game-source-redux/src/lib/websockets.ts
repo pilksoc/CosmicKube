@@ -14,8 +14,8 @@ export type PlayerCoordinateDelta = {
 
 class KubeWebSocket {
   // Socket Shite
-  public onError: (ev: Event) => void = () => { };
-  public onClose: () => void = () => { };
+  public onError: (ev: Event) => void = console.error;
+  public onClose: () => void = console.error;
 
   // Game actions
   public onPlayerAction?: (
