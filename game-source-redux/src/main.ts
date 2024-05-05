@@ -1,8 +1,17 @@
-import './app.css'
-import App from './App.svelte'
+import "./app.css";
+import App from "./App.svelte";
+import KubeWebSocket from "./websockets";
 
 const app = new App({
-  target: document.getElementById('app')!,
-})
+  target: document.getElementById("app")!,
+});
 
-export default app
+KubeWebSocket.onError = (err) => {
+  console.error(err);
+};
+
+KubeWebSocket.onClose = () => {
+  console.error("Connection closed");
+};
+
+export default app;

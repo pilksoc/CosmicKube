@@ -1,8 +1,8 @@
-const baseUrl = "https://hack.djpiper28.co.uk/ws";
+const baseUrl = "https://hack.djpiper28.co.uk/ws/";
 
 class KubeWebSocket {
-  private onError: (err: string) => void;
-  private onClose: () => void;
+  public onError: (err: string) => void = () => {};
+  public onClose: () => void = () => {};
   private ws: WebSocket;
 
   constructor() {
