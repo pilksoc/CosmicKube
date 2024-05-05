@@ -21,6 +21,8 @@ pub async fn client_connection(ws: WebSocket) {
 
     let client_rcv = UnboundedReceiverStream::new(client_rcv);
 
+    // TODO: fix me!
+    // https://stackoverflow.com/questions/54503625/why-does-calling-tokiospawn-result-in-the-panic-spawnerror-is-shutdown-tru
     // 'spawns' a new task, that stays alive until the client has disconnected.
     tokio::task::spawn(client_rcv.forward(client_ws_sender).map(|result| {
         if let Err(e) = result {
