@@ -1,11 +1,4 @@
 import { v4 } from "uuid";
-import {
-  Coordinate,
-  Kube,
-  Player,
-  PlayerInfo,
-  SpaceKinds,
-} from "./kube_types";
 
 const baseUrl = "https://hack.djpiper28.co.uk/ws/";
 
@@ -21,16 +14,16 @@ export type PlayerCoordinateDelta = {
 
 class KubeWebSocket {
   // Socket Shite
-  public onError: (err: string) => void = () => {};
-  public onClose: () => void = () => {};
+  public onError: (ev: Event) => void = () => { };
+  public onClose: () => void = () => { };
 
   // Game actions
-  public onPlayerAction: (
+  public onPlayerAction?: (
     coords: PlayerCoordinateDelta,
     player: Player,
   ) => void;
-  public onKubeAction: (coords: PlayerCoordinateDelta, kube: Kube) => void;
-  public onEmptyAction: (coords: PlayerCoordinateDelta) => void;
+  public onKubeAction?: (coords: PlayerCoordinateDelta, kube: Kube) => void;
+  public onEmptyAction?: (coords: PlayerCoordinateDelta) => void;
 
   private ws: WebSocket;
 
@@ -54,15 +47,15 @@ class KubeWebSocket {
     if (action) {
       switch (action.kind) {
         case SpaceKinds.EMPTY:
-          this.onEmptyAction(coordDelta);
+          this.onEmptyAction?.(coordDelta);
           break;
         case SpaceKinds.KUBE:
           if (!action.kube) throw new Error("Shit is fucked");
-          this.onKubeAction(coordDelta, action.kube);
+          this.onKubeAction?.(coordDelta, action.kube);
           break;
         case SpaceKinds.PLAYER:
           if (!action.player) throw new Error("Shit is fucked");
-          this.onPlayerAction(coordDelta, action.player);
+          this.onPlayerAction?.(coordDelta, action.player);
           break;
       }
     }
