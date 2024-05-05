@@ -1,6 +1,6 @@
 import { v4 } from "uuid";
 
-const baseUrl = "https://hack.djpiper28.co.uk/ws/";
+const baseUrl = "wss://hack.djpiper28.co.uk/ws/";
 
 export const ERR_VAL = -9999999;
 
@@ -12,7 +12,7 @@ export type PlayerCoordinateDelta = {
   newCoord: Coordinate;
 };
 
-class KubeWebSocket {
+export default class KubeWebSocket {
   // Socket Shite
   public onError: (ev: Event) => void = console.error;
   public onClose: () => void = console.error;
@@ -26,12 +26,16 @@ class KubeWebSocket {
   public onEmptyAction?: (coords: PlayerCoordinateDelta) => void;
 
   private ws: WebSocket;
+  private name: string;
 
-  constructor() {
+  constructor(name: string) {
+    this.name = name;
+
     this.ws = new WebSocket(baseUrl);
     this.ws.onmessage = this.onMessage.bind(this);
     this.ws.onclose = this.onClose.bind(this);
     this.ws.onerror = this.onError.bind(this);
+    this.ws.onopen = this.onopen.bind(this)
   }
 
   private onMessage(event: MessageEvent) {
@@ -61,23 +65,21 @@ class KubeWebSocket {
     }
   }
 
-  public connectAs(name: string) {
+  private send(data: string) {
+    console.log(`Sending: ${data}`);
+    this.ws.send(data);
+  }
+
+  private onopen() {
     const data: PlayerInfo = {
       initialised: false,
       player: {
         uuid: v4(),
-        username: name,
+        username: this.name,
       },
       coordinates: [0, 0],
     };
 
     this.send(JSON.stringify(data));
   }
-
-  private send(data: string) {
-    console.log(`Sending: ${data}`);
-    this.ws.send(data);
-  }
 }
-
-export default new KubeWebSocket();

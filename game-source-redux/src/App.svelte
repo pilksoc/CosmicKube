@@ -10,15 +10,15 @@
   const cube_size = 100;
 
   onMount(() => {
-    KubeWebSocket.onError = (err) => {
+    const ws = new KubeWebSocket("Danny");
+
+    ws.onError = (err) => {
       console.error(err);
     };
 
-    KubeWebSocket.onClose = () => {
+    ws.onClose = () => {
       console.error("Connection closed");
     };
-
-    KubeWebSocket.connectAs("DannyBoy");
   });
 </script>
 
