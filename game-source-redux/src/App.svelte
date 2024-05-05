@@ -21,12 +21,12 @@
 </script>
 
 <main>
-  {#each { length: height } as _, j}
-    {#each { length: width } as _, i}
+  {#each { length: height } as _, y}
+    {#each { length: width } as _, x}
       <div
-        id={`tile-${j}-${i}`}
-        class={`tile ${(i + j) % 2 == 0 ? "tile-even" : "tile-odd"}`}
-        style={`width: ${cube_size}px; height: ${cube_size}px; position: absolute; top: ${cube_size * j}px; left: ${cube_size * i}px;`}
+        id={`tile-${y}-${x}`}
+        class={`tile ${(x + y) % 2 == 0 ? "tile-even" : "tile-odd"}`}
+        style={`width: ${cube_size}px; height: ${cube_size}px; position: absolute; top: ${cube_size * y}px; left: ${cube_size * x}px;`}
       ></div>
     {/each}
   {/each}
