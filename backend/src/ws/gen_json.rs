@@ -26,6 +26,7 @@ async fn recalculate_game(state: PlayerInfo, id: &str) -> String {
     println!("Generating new game state for {id}");
     modify_gamestate(state).await;
 
+    println!("Updating world data for {id}");
     // The dereferencing looks a little weird. Here's what's going on:
     // Tokio's Mutex when locking returns a MutexGuard.
     // This is the same behaviour as std::sync::Mutex.

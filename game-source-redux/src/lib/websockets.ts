@@ -1,6 +1,7 @@
 import { v4 } from "uuid";
 
 const baseUrl = "wss://hack.djpiper28.co.uk/ws/";
+// const baseUrl = "ws://localhost:8000/ws/";
 
 export const ERR_VAL = -9999999;
 

@@ -1,6 +1,9 @@
+#![feature(async_closure)]
 use std::convert::Infallible;
 use cosmic_kube::{Clients, CLIENTS};
 use warp::{Filter, Rejection};
+use std::backtrace::Backtrace;
+use std::panic;
 
 mod handlers;
 mod ws;
@@ -9,9 +12,18 @@ mod ws;
 type Result<T> = std::result::Result<T, Rejection>;
 
 
-#[tokio::main]
+#[tokio::main(flavor = "multi_thread")]
 async fn main() {
+    panic::set_hook(Box::new(|info| {
+        //let stacktrace = Backtrace::capture();
+        let stacktrace = Backtrace::force_capture();
+        println!("Got panic. @info:{}\n@stackTrace:{}", info, stacktrace);
+        std::process::abort();
+    }));
+
     //initialise a hashmap to store currently connected clients. We may want some more logic here if we want currently connected clients to be stored somewhere
+    println!("Turning console on"); //debug
+    console_subscriber::init();
 
     println!("Configuring websocket route"); //debug
     let ws_route = warp::path("ws")
