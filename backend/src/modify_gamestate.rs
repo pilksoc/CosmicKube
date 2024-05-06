@@ -1,5 +1,4 @@
 // methods here are solely for modifying the state of the game!
-
 use std::fmt;
 
 use serde::{Deserialize, Serialize};
@@ -50,10 +49,12 @@ pub struct Action {
 }
 
 pub async fn modify_gamestate(player_state: PlayerInfo) {
+    println!("Moving player");
     // move the player's position on the grid
     move_player(player_state.old_coordinates, player_state.coordinates, player_state.player).await;
 
     // then we want to update the grid by performing action
+    println!("Performing action");
     match player_state.action {
         Some(p) => perform_action(p).await,
         None => (),
@@ -75,18 +76,30 @@ pub async fn perform_action(action: Action) {
 pub async fn move_player(old_pos: Option<[u64; 2]>, new_pos: [u64; 2], player: Player) {
     let player_key = player.uuid.to_string();
 
+    println!("Removing old position");
     //remove the players old location in the world, if provided
     match old_pos {
         Some(c) => WORLD.lock().await.insert(Space::new(c, SpaceKind::EmptySpace)),
         _ => (),
     }
 
+    println!("Adding new position");
     // store the players location in the world
     let playerspace: Space = Space::new(new_pos, SpaceKind::Player(player));
     WORLD.lock().await.insert(playerspace);
 
+    println!("Updating player position");
     //we now store the player's last known location in the 'active clients' hashmap
-    CLIENTS.lock().await.entry(player_key).and_modify(|client| client.last_position = new_pos);
+    tokio::spawn(
+        async move {
+            CLIENTS.lock().await
+                .entry(player_key)
+                .and_modify(|client| client.last_position = new_pos);
+            Ok::<(), ()>(())
+        }
+    );
+
+    println!("Updated that bastard of a player!!");
 }
 
 pub async fn remove_player(player_location: Coordinate) {

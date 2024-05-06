@@ -1,11 +1,12 @@
 use crate::ws::gen_json::create_response;
 use cosmic_kube::{modify_gamestate::remove_player, CLIENTS, Client, Coordinate};
-use futures::{FutureExt, StreamExt};
+use futures::StreamExt;
 use rand::Rng;
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 use uuid::Uuid;
 use warp::ws::{Message, WebSocket};
+
 mod gen_json;
 
 pub async fn client_connection(ws: WebSocket) {
@@ -20,15 +21,9 @@ pub async fn client_connection(ws: WebSocket) {
     let (client_sender, client_rcv) = mpsc::unbounded_channel();
 
     let client_rcv = UnboundedReceiverStream::new(client_rcv);
-
-    // TODO: fix me!
-    // https://stackoverflow.com/questions/54503625/why-does-calling-tokiospawn-result-in-the-panic-spawnerror-is-shutdown-tru
+    
     // 'spawns' a new task, that stays alive until the client has disconnected.
-    tokio::task::spawn(client_rcv.forward(client_ws_sender).map(|result| {
-        if let Err(e) = result {
-            println!("error sending websocket msg: {}", e);
-        }
-    }));
+    tokio::spawn(client_rcv.forward(client_ws_sender));
 
     // creating a new uuid to use as the key in the 'clients' hashmap, and a new instance of a 'client'
     // this might be clapped
@@ -81,7 +76,7 @@ async fn call_remove_player(uuid: &str) {
 // ->recieve client game info <- send back client game state
 // wwwwwwwwwwwwwwwwwwwww i am so tired
 async fn client_msg(client_id: &str, msg: Message) {
-    //println!("received message from {}: {:?}", client_id, msg); //debug
+    println!("Received message from {client_id}"); //debug
 
     let Ok(message) = msg.to_str() else { return };
 
