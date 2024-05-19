@@ -74,8 +74,7 @@ impl Grid {
         if let Some(space) = self.spaces.remove(&coordinate) {
             if let SpaceKind::Player(player) = &space.contains {
                 let _ = self.players.remove(&player.uuid);
-            }
-            Some(space)
+            }            Some(space)
         }
         else {
             None

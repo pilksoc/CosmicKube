@@ -7,6 +7,7 @@ use std::panic;
 
 mod handlers;
 mod ws;
+mod mem_client;
 
 // type aliases!
 type Result<T> = std::result::Result<T, Rejection>;
